@@ -1,0 +1,12 @@
+domain: my.domain
+layout: go.kubebuilder.io/v2
+projectName: jupyter-operator
+repo: github.com/tkestack/jupyter-operator
+resources:
+- group: kubeflow.tkestack.io
+  kind: JupyterNotebook
+  version: v1alpha1
+- group: kubeflow.tkestack.io
+  kind: JupyterGateway
+  version: v1alpha1
+version: 3-alpha

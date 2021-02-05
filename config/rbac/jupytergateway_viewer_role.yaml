@@ -1,0 +1,20 @@
+# permissions for end users to view jupytergateways.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: jupytergateway-viewer-role
+rules:
+- apiGroups:
+  - kubeflow.tkestack.io.my.domain
+  resources:
+  - jupytergateways
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - kubeflow.tkestack.io.my.domain
+  resources:
+  - jupytergateways/status
+  verbs:
+  - get
