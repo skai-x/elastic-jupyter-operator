@@ -1,0 +1,48 @@
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - kubeflow.tkestack.io.my.domain
+  resources:
+  - jupytergateways
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - kubeflow.tkestack.io.my.domain
+  resources:
+  - jupytergateways/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - kubeflow.tkestack.io.my.domain
+  resources:
+  - jupyternotebooks
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - kubeflow.tkestack.io.my.domain
+  resources:
+  - jupyternotebooks/status
+  verbs:
+  - get
+  - patch
+  - update

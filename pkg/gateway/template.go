@@ -24,16 +24,7 @@ const (
 )
 
 var (
-	defaultKernels = []string{
-		"r_kubernetes",
-		"python_kubernetes",
-		"python_tf_kubernetes",
-		"python_tf_gpu_kubernetes",
-		"scala_kubernetes",
-		"spark_r_kubernetes",
-		"spark_python_kubernetes",
-		"spark_scala_kubernetes",
-	}
+	defaultKernels = "'r_kubernetes','python_kubernetes','python_tf_kubernetes','python_tf_gpu_kubernetes','scala_kubernetes','spark_r_kubernetes','spark_python_kubernetes','spark_scala_kubernetes'"
 )
 
 type Generator struct {
@@ -135,7 +126,7 @@ func (g Generator) kernels() string {
 	if g.gateway.Spec.Kernels != nil {
 		return strings.Join(g.gateway.Spec.Kernels, ",")
 	}
-	return strings.Join(defaultKernels, ",")
+	return defaultKernels
 }
 
 func (g Generator) defaultKernel() string {

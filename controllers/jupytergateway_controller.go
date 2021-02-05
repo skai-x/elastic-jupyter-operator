@@ -21,6 +21,7 @@ import (
 
 	"github.com/go-logr/logr"
 	appsv1 "k8s.io/api/apps/v1"
+	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -97,6 +98,16 @@ func (r *JupyterGatewayReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 		r.Log.Error(err, "failed to get the expected deployment",
 			"deployment", desired.Name)
 		return reconcile.Result{}, err
+	}
+
+	if !equality.Semantic.DeepEqual(instance.Status.DeploymentStatus, actual.Status) {
+		instance.Status.DeploymentStatus = actual.Status
+		if err := r.Status().Update(context.TODO(), instance); err != nil {
+			r.Log.Error(err, "failed to update status",
+				"namespace", instance.Namespace,
+				"jupytergateway", instance.Name)
+			return reconcile.Result{}, err
+		}
 	}
 	return ctrl.Result{}, nil
 }
