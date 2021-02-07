@@ -1,4 +1,3 @@
-domain: my.domain
 layout: go.kubebuilder.io/v2
 projectName: jupyter-operator
 repo: github.com/tkestack/jupyter-operator

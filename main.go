@@ -60,7 +60,7 @@ func main() {
 		MetricsBindAddress: metricsAddr,
 		Port:               9443,
 		LeaderElection:     enableLeaderElection,
-		LeaderElectionID:   "82ec55e3.my.domain",
+		LeaderElectionID:   "82ec55e3.kubeflow.tkestack.io",
 	})
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")

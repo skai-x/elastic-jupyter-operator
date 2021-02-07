@@ -34,8 +34,8 @@ type JupyterNotebookReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-// +kubebuilder:rbac:groups=kubeflow.tkestack.io.my.domain,resources=jupyternotebooks,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=kubeflow.tkestack.io.my.domain,resources=jupyternotebooks/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=kubeflow.tkestack.io,resources=jupyternotebooks,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=kubeflow.tkestack.io,resources=jupyternotebooks/status,verbs=get;update;patch
 
 func (r *JupyterNotebookReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()
