@@ -1,7 +1,8 @@
-apiVersion: kubeflow.tkestack.io.my.domain/v1alpha1
+apiVersion: kubeflow.tkestack.io/v1alpha1
 kind: JupyterNotebook
 metadata:
   name: jupyternotebook-sample
 spec:
-  # Add fields here
-  foo: bar
+  gateway:
+    name: jupytergateway-sample
+    namespace: default

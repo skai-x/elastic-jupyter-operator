@@ -21,16 +21,12 @@ import (
 
 	"github.com/go-logr/logr"
 	appsv1 "k8s.io/api/apps/v1"
-	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
 	"github.com/tkestack/jupyter-operator/api/v1alpha1"
@@ -60,54 +56,20 @@ func (r *JupyterGatewayReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 		if errors.IsNotFound(err) {
 			// Object not found, return.  Created objects are automatically garbage collected.
 			// For additional cleanup logic use finalizers.
-			return reconcile.Result{}, nil
+			return ctrl.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
 		r.Log.Error(err, "Failed to get the object, requeuing the request")
-		return reconcile.Result{}, err
+		return ctrl.Result{}, err
 	}
 	instance := original.DeepCopy()
 
-	g, err := gateway.NewGenerator(instance)
+	gr, err := gateway.NewReconciler(r.Client, r.Log, r.Recorder, r.Scheme, instance)
 	if err != nil {
-		// Error reading the object - requeue the request.
-		r.Log.Error(err, "Failed to create the generator, requeuing the request")
-		return reconcile.Result{}, err
+		return ctrl.Result{}, err
 	}
-	desired := g.TemplateWithoutOwner()
-
-	if err := controllerutil.SetControllerReference(
-		instance, desired, r.Scheme); err != nil {
-		r.Log.Error(err,
-			"Set controller reference error, requeuing the request")
-		return reconcile.Result{}, err
-	}
-
-	actual := &appsv1.Deployment{}
-	err = r.Get(context.TODO(),
-		types.NamespacedName{Name: desired.GetName(), Namespace: desired.GetNamespace()}, actual)
-	if err != nil && errors.IsNotFound(err) {
-		r.Log.Info("Creating deployment", "namespace", desired.Namespace, "name", desired.Name)
-
-		if err := r.Create(context.TODO(), desired); err != nil {
-			r.Log.Error(err, "CreateSuggestion failed",
-				"deployment", desired.Name)
-			return reconcile.Result{}, err
-		}
-	} else if err != nil {
-		r.Log.Error(err, "failed to get the expected deployment",
-			"deployment", desired.Name)
-		return reconcile.Result{}, err
-	}
-
-	if !equality.Semantic.DeepEqual(instance.Status.DeploymentStatus, actual.Status) {
-		instance.Status.DeploymentStatus = actual.Status
-		if err := r.Status().Update(context.TODO(), instance); err != nil {
-			r.Log.Error(err, "failed to update status",
-				"namespace", instance.Namespace,
-				"jupytergateway", instance.Name)
-			return reconcile.Result{}, err
-		}
+	if err := gr.Reconcile(); err != nil {
+		return ctrl.Result{}, err
 	}
 	return ctrl.Result{}, nil
 }

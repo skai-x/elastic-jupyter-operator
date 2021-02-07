@@ -27,27 +27,55 @@ var (
 	defaultKernels = "'r_kubernetes','python_kubernetes','python_tf_kubernetes','python_tf_gpu_kubernetes','scala_kubernetes','spark_r_kubernetes','spark_python_kubernetes','spark_scala_kubernetes'"
 )
 
-type Generator struct {
+// generator defines the generator which is used to generate
+// desired specs.
+type generator struct {
 	gateway *v1alpha1.JupyterGateway
 }
 
-func NewGenerator(gateway *v1alpha1.JupyterGateway) (*Generator, error) {
+// newGenerator creates a new Generator.
+func newGenerator(gateway *v1alpha1.JupyterGateway) (
+	*generator, error) {
 	if gateway == nil {
 		return nil, fmt.Errorf("Got nil when initializing Generator")
 	}
-	g := &Generator{
+	g := &generator{
 		gateway: gateway,
 	}
 
 	return g, nil
 }
 
-func (g Generator) TemplateWithoutOwner() *appsv1.Deployment {
-	labels := map[string]string{
-		LabelNS:      g.gateway.Namespace,
-		LabelGateway: g.gateway.Name,
+// DesiredServiceWithoutOwner returns desired service without
+// owner.
+func (g generator) DesiredServiceWithoutOwner() *v1.Service {
+	labels := g.labels()
+	s := &v1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Namespace: g.gateway.Namespace,
+			Name:      g.gateway.Name,
+			Labels:    labels,
+		},
+		Spec: v1.ServiceSpec{
+			Selector:        labels,
+			Type:            v1.ServiceTypeClusterIP,
+			SessionAffinity: v1.ServiceAffinityClientIP,
+			Ports: []v1.ServicePort{
+				{
+					Name:     defaultPortName,
+					Port:     defaultPort,
+					Protocol: v1.ProtocolTCP,
+				},
+			},
+		},
 	}
+	return s
+}
 
+// DesiredDeploymentWithoutOwner returns the desired deployment
+// without owner.
+func (g generator) DesiredDeploymentWithoutOwner() *appsv1.Deployment {
+	labels := g.labels()
 	selector := &metav1.LabelSelector{
 		MatchLabels: labels,
 	}
@@ -55,6 +83,7 @@ func (g Generator) TemplateWithoutOwner() *appsv1.Deployment {
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: g.gateway.Namespace,
 			Name:      g.gateway.Name,
+			Labels:    labels,
 		},
 		Spec: appsv1.DeploymentSpec{
 			Selector: selector,
@@ -122,14 +151,21 @@ func (g Generator) TemplateWithoutOwner() *appsv1.Deployment {
 	return d
 }
 
-func (g Generator) kernels() string {
+func (g generator) labels() map[string]string {
+	return map[string]string{
+		LabelNS:      g.gateway.Namespace,
+		LabelGateway: g.gateway.Name,
+	}
+}
+
+func (g generator) kernels() string {
 	if g.gateway.Spec.Kernels != nil {
 		return strings.Join(g.gateway.Spec.Kernels, ",")
 	}
 	return defaultKernels
 }
 
-func (g Generator) defaultKernel() string {
+func (g generator) defaultKernel() string {
 	if g.gateway.Spec.DefaultKernel != nil {
 		return *g.gateway.Spec.DefaultKernel
 	}

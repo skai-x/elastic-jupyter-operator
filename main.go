@@ -68,9 +68,10 @@ func main() {
 	}
 
 	if err = (&controllers.JupyterNotebookReconciler{
-		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("controllers").WithName("JupyterNotebook"),
-		Scheme: mgr.GetScheme(),
+		Client:   mgr.GetClient(),
+		Log:      ctrl.Log.WithName("controllers").WithName("JupyterNotebook"),
+		Recorder: mgr.GetEventRecorderFor("JupyterNotebook"),
+		Scheme:   mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "JupyterNotebook")
 		os.Exit(1)

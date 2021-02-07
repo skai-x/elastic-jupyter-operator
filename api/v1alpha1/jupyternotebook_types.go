@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -25,17 +26,11 @@ import (
 
 // JupyterNotebookSpec defines the desired state of JupyterNotebook
 type JupyterNotebookSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	// Foo is an example field of JupyterNotebook. Edit JupyterNotebook_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	Gateway *v1.ObjectReference `json:"gateway,omitempty"`
 }
 
 // JupyterNotebookStatus defines the observed state of JupyterNotebook
 type JupyterNotebookStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
 }
 
 // +kubebuilder:object:root=true

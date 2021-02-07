@@ -20,18 +20,23 @@ import (
 	"context"
 
 	"github.com/go-logr/logr"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
+	"github.com/tkestack/jupyter-operator/api/v1alpha1"
 	kubeflowtkestackiov1alpha1 "github.com/tkestack/jupyter-operator/api/v1alpha1"
+	"github.com/tkestack/jupyter-operator/pkg/notebook"
 )
 
 // JupyterNotebookReconciler reconciles a JupyterNotebook object
 type JupyterNotebookReconciler struct {
 	client.Client
-	Log    logr.Logger
-	Scheme *runtime.Scheme
+	Log      logr.Logger
+	Recorder record.EventRecorder
+	Scheme   *runtime.Scheme
 }
 
 // +kubebuilder:rbac:groups=kubeflow.tkestack.io,resources=jupyternotebooks,verbs=get;list;watch;create;update;patch;delete
@@ -41,8 +46,28 @@ func (r *JupyterNotebookReconciler) Reconcile(req ctrl.Request) (ctrl.Result, er
 	_ = context.Background()
 	_ = r.Log.WithValues("jupyternotebook", req.NamespacedName)
 
-	// your logic here
+	original := &v1alpha1.JupyterNotebook{}
 
+	err := r.Get(context.TODO(), req.NamespacedName, original)
+	if err != nil {
+		if errors.IsNotFound(err) {
+			// Object not found, return.  Created objects are automatically garbage collected.
+			// For additional cleanup logic use finalizers.
+			return ctrl.Result{}, nil
+		}
+		// Error reading the object - requeue the request.
+		r.Log.Error(err, "Failed to get the object, requeuing the request")
+		return ctrl.Result{}, err
+	}
+	instance := original.DeepCopy()
+
+	gr, err := notebook.NewReconciler(r.Client, r.Log, r.Recorder, r.Scheme, instance)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	if err := gr.Reconcile(); err != nil {
+		return ctrl.Result{}, err
+	}
 	return ctrl.Result{}, nil
 }
 

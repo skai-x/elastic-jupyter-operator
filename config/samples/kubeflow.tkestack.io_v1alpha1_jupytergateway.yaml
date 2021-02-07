@@ -1,4 +1,4 @@
-apiVersion: kubeflow.tkestack.io.my.domain/v1alpha1
+apiVersion: kubeflow.tkestack.io/v1alpha1
 kind: JupyterGateway
 metadata:
   name: jupytergateway-sample
