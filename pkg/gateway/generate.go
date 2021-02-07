@@ -7,20 +7,26 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/tkestack/jupyter-operator/api/v1alpha1"
 )
 
 const (
-	defaultImage         = "elyra/enterprise-gateway:dev"
-	defaultContainerName = "gateway"
-	defaultPortName      = "gateway"
-	defaultKernel        = "python_kubernetes"
-	defaultPort          = 8888
+	defaultImage              = "elyra/enterprise-gateway:dev"
+	defaultContainerName      = "gateway"
+	defaultPortName           = "gateway"
+	defaultKernel             = "python_kubernetes"
+	defaultPort               = 8888
+	defaultGatewayClusterRole = "enterprise-gateway-controller"
+	defaultServiceAccount     = "enterprise-gateway-sa"
 
 	LabelGateway = "gateway"
 	LabelNS      = "namespace"
+
+	cullTimeoutOpt = "--MappingKernelManager.cull_idle_timeout"
+	cullInterval   = "--MappingKernelManager.cull_interval"
 )
 
 var (
@@ -72,9 +78,50 @@ func (g generator) DesiredServiceWithoutOwner() *v1.Service {
 	return s
 }
 
+func (g generator) DesiredRoleBinding(
+	sa *v1.ServiceAccount) *rbacv1.RoleBinding {
+	labels := g.labels()
+	crb := &rbacv1.RoleBinding{
+		ObjectMeta: metav1.ObjectMeta{
+			Namespace: g.gateway.Namespace,
+			Name:      g.gateway.Name,
+			Labels:    labels,
+		},
+		Subjects: []rbacv1.Subject{
+			{
+				Kind:      sa.Kind,
+				Name:      sa.Name,
+				Namespace: sa.Namespace,
+			},
+		},
+		RoleRef: rbacv1.RoleRef{
+			Name:     defaultGatewayClusterRole,
+			Kind:     "ClusterRole",
+			APIGroup: "rbac.authorization.k8s.io",
+		},
+	}
+	return crb
+}
+
+func (g generator) DesiredServiceAccountWithoutOwner() *v1.ServiceAccount {
+	labels := g.labels()
+	sa := &v1.ServiceAccount{
+		TypeMeta: metav1.TypeMeta{
+			Kind: "ServiceAccount",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Namespace: g.gateway.Namespace,
+			Name:      g.gateway.Name,
+			Labels:    labels,
+		},
+	}
+	return sa
+}
+
 // DesiredDeploymentWithoutOwner returns the desired deployment
 // without owner.
-func (g generator) DesiredDeploymentWithoutOwner() *appsv1.Deployment {
+func (g generator) DesiredDeploymentWithoutOwner(
+	sa string) *appsv1.Deployment {
 	labels := g.labels()
 	selector := &metav1.LabelSelector{
 		MatchLabels: labels,
@@ -92,6 +139,7 @@ func (g generator) DesiredDeploymentWithoutOwner() *appsv1.Deployment {
 					Labels: labels,
 				},
 				Spec: v1.PodSpec{
+					ServiceAccountName: sa,
 					Containers: []v1.Container{
 						{
 							Name:            defaultContainerName,
@@ -104,11 +152,14 @@ func (g generator) DesiredDeploymentWithoutOwner() *appsv1.Deployment {
 									Protocol:      v1.ProtocolTCP,
 								},
 							},
-
 							Env: []v1.EnvVar{
 								{
 									Name:  "EG_DEFAULT_KERNEL_NAME",
 									Value: g.defaultKernel(),
+								},
+								{
+									Name:  "EG_KERNEL_CLUSTER_ROLE",
+									Value: g.defaultClusterRole(),
 								},
 								{
 									Name:  "EG_KERNEL_WHITELIST",
@@ -148,7 +199,31 @@ func (g generator) DesiredDeploymentWithoutOwner() *appsv1.Deployment {
 		},
 	}
 
+	if g.gateway.Spec.CullIdleTimeout != nil {
+		env := v1.EnvVar{
+			Name:  "EG_CULL_IDLE_TIMEOUT",
+			Value: strconv.Itoa(int(*g.gateway.Spec.CullIdleTimeout)),
+		}
+		d.Spec.Template.Spec.Containers[0].Env = append(
+			d.Spec.Template.Spec.Containers[0].Env, env)
+	}
+	if g.gateway.Spec.CullInterval != nil {
+		env := v1.EnvVar{
+			Name:  "EG_CULL_INTERVAL",
+			Value: strconv.Itoa(int(*g.gateway.Spec.CullInterval)),
+		}
+		d.Spec.Template.Spec.Containers[0].Env = append(
+			d.Spec.Template.Spec.Containers[0].Env, env)
+	}
+
 	return d
+}
+
+func (g generator) defaultClusterRole() string {
+	if g.gateway.Spec.ClusterRole != nil {
+		return *g.gateway.Spec.ClusterRole
+	}
+	return defaultGatewayClusterRole
 }
 
 func (g generator) labels() map[string]string {

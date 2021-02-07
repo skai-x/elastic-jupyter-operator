@@ -36,6 +36,8 @@ spec:
         spec:
           description: JupyterGatewaySpec defines the desired state of JupyterGateway
           properties:
+            clusterRole:
+              type: string
             defaultKernel:
               type: string
             kernels:

@@ -26,6 +26,11 @@ type JupyterGatewaySpec struct {
 	// We will add kernels at runtime, thus we do not make it a type.
 	Kernels       []string `json:"kernels,omitempty"`
 	DefaultKernel *string  `json:"defaultKernel,omitempty"`
+	// Ref https://jupyter-notebook.readthedocs.io/en/stable/config.html
+	CullIdleTimeout *int32 `json:"cullIdleTimeout,omitempty"`
+	CullInterval    *int32 `json:"cullInterval,omitempty"`
+
+	ClusterRole *string `json:"clusterRole,omitempty"`
 }
 
 type KernelType string

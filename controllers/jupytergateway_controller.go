@@ -44,6 +44,9 @@ type JupyterGatewayReconciler struct {
 
 // +kubebuilder:rbac:groups=kubeflow.tkestack.io,resources=jupytergateways,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=kubeflow.tkestack.io,resources=jupytergateways/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups="apps",resources=deployments,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups="",resources=services,verbs=get;list;watch;create;update;create;patch;delete
+// +kubebuilder:rbac:groups="",resources=serviceaccounts;configmaps;events,verbs=get;create;update;patch
 
 func (r *JupyterGatewayReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()

@@ -6,6 +6,7 @@ import (
 	"github.com/go-logr/logr"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -45,13 +46,89 @@ func NewReconciler(cli client.Client, l logr.Logger,
 }
 
 func (r Reconciler) Reconcile() error {
-	if err := r.reconcileDeployment(); err != nil {
+	serviceAccountName, err := r.reconcileRBAC()
+	if err != nil {
+		return err
+	}
+	if err := r.reconcileDeployment(serviceAccountName); err != nil {
 		return err
 	}
 	if err := r.reconcileService(); err != nil {
 		return err
 	}
 	return nil
+}
+
+func (r Reconciler) reconcileRBAC() (string, error) {
+	sa, err := r.reconcileServiceAccount()
+	if err != nil {
+		return "", err
+	}
+	if err := r.reconcileRoleBinding(sa); err != nil {
+		return "", err
+	}
+	return sa.Name, nil
+}
+
+func (r Reconciler) reconcileRoleBinding(
+	sa *v1.ServiceAccount) error {
+	desired := r.gen.DesiredRoleBinding(sa)
+
+	if err := controllerutil.SetControllerReference(
+		r.instance, desired, r.scheme); err != nil {
+		r.log.Error(err,
+			"Set controller reference error, requeuing the request")
+		return err
+	}
+
+	actual := &rbacv1.RoleBinding{}
+	err := r.cli.Get(context.TODO(),
+		types.NamespacedName{Name: desired.GetName(), Namespace: desired.GetNamespace()}, actual)
+	if err != nil && errors.IsNotFound(err) {
+		r.log.Info("Creating rolebinding",
+			"namespace", desired.Namespace, "name", desired.Name)
+
+		if err := r.cli.Create(context.TODO(), desired); err != nil {
+			r.log.Error(err, "Failed to create the rolebinding",
+				"rolebinding", desired.Name)
+			return err
+		}
+	} else if err != nil {
+		r.log.Error(err, "failed to get the expected rolebinding",
+			"rolebinding", desired.Name)
+		return err
+	}
+	return nil
+}
+
+func (r Reconciler) reconcileServiceAccount() (*v1.ServiceAccount, error) {
+	desired := r.gen.DesiredServiceAccountWithoutOwner()
+
+	if err := controllerutil.SetControllerReference(
+		r.instance, desired, r.scheme); err != nil {
+		r.log.Error(err,
+			"Set controller reference error, requeuing the request")
+		return nil, err
+	}
+
+	actual := &v1.ServiceAccount{}
+	err := r.cli.Get(context.TODO(),
+		types.NamespacedName{Name: desired.GetName(), Namespace: desired.GetNamespace()}, actual)
+	if err != nil && errors.IsNotFound(err) {
+		r.log.Info("Creating serviceaccount", "namespace", desired.Namespace, "name", desired.Name)
+
+		if err := r.cli.Create(context.TODO(), desired); err != nil {
+			r.log.Error(err, "Failed to create the serviceaccount",
+				"serviceaccount", desired.Name)
+			return nil, err
+		}
+	} else if err != nil {
+		r.log.Error(err, "failed to get the expected serviceaccount",
+			"serviceaccount", desired.Name)
+		return nil, err
+	}
+	// When the sa is created, actual is nil. Thus actual cannot be used to build rolebinding.
+	return desired, nil
 }
 
 func (r Reconciler) reconcileService() error {
@@ -83,8 +160,8 @@ func (r Reconciler) reconcileService() error {
 	return nil
 }
 
-func (r Reconciler) reconcileDeployment() error {
-	desired := r.gen.DesiredDeploymentWithoutOwner()
+func (r Reconciler) reconcileDeployment(sa string) error {
+	desired := r.gen.DesiredDeploymentWithoutOwner(sa)
 
 	if err := controllerutil.SetControllerReference(
 		r.instance, desired, r.scheme); err != nil {
