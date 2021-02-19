@@ -1,0 +1,10 @@
+source:
+  third_party_source:
+    filepath_regex: [".*/cmd/.*",
+                     ".*/examples/.*",
+                     ".*/hack/.*",
+                     ".*/installer/.*",
+                     ".*/pkg/.*",
+                     ".*/third_party/.*",
+                     ".*/build/.*",
+                     ".*/test/.*"]

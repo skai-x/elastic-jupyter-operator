@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	defaultImage              = "elyra/enterprise-gateway:dev"
+	defaultImage              = "ccr.ccs.tencentyun.com/kubeflow-oteam/enterprise-gateway:dev"
 	defaultContainerName      = "gateway"
+	defaultKernelImage        = "ccr.ccs.tencentyun.com/kubeflow-oteam/jupyter-kernel-py:dev"
 	defaultPortName           = "gateway"
 	defaultKernel             = "python_kubernetes"
 	defaultPort               = 8888
@@ -190,6 +191,10 @@ func (g generator) DesiredDeploymentWithoutOwner(
 								{
 									Name:  "EG_KERNEL_LAUNCH_TIMEOUT",
 									Value: "60",
+								},
+								{
+									Name:  "EG_KERNEL_IMAGE",
+									Value: defaultKernelImage,
 								},
 							},
 						},

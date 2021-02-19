@@ -3,4 +3,4 @@ kind: JupyterGateway
 metadata:
   name: jupytergateway-sample
 spec:
-  cullIdleTimeout: 20
+  cullIdleTimeout: 3600
