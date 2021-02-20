@@ -101,3 +101,6 @@ replicaset.apps/jupyternotebook-sample-5bf7d9d9fb   1         1         1       
 kubectl port-forward jupyternotebook-sample-5bf7d9d9fb-nq9b8 8888
 ```
 
+## API 文档
+
+请见 [API 文档](docs/generated.asciidoc)

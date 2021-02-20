@@ -3,6 +3,7 @@ module github.com/tkestack/jupyter-operator
 go 1.13
 
 require (
+	github.com/elastic/crd-ref-docs v0.0.7 // indirect
 	github.com/go-logr/logr v0.1.0
 	github.com/onsi/ginkgo v1.12.1
 	github.com/onsi/gomega v1.10.1

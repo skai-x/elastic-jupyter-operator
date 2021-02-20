@@ -1,0 +1,167 @@
+// Generated documentation. Please do not edit.
+:anchor_prefix: k8s-api
+
+[id="{p}-api-reference"]
+= API Reference
+
+.Packages
+- xref:{anchor_prefix}-kubeflow-tkestack-io-v1alpha1[$$kubeflow.tkestack.io/v1alpha1$$]
+
+
+[id="{anchor_prefix}-kubeflow-tkestack-io-v1alpha1"]
+== kubeflow.tkestack.io/v1alpha1
+
+Package v1alpha1 contains API Schema definitions for the kubeflow.tkestack.io v1alpha1 API group
+
+.Resource Types
+- xref:{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupytergateway[$$JupyterGateway$$]
+- xref:{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupytergatewaylist[$$JupyterGatewayList$$]
+- xref:{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupyternotebook[$$JupyterNotebook$$]
+- xref:{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupyternotebooklist[$$JupyterNotebookList$$]
+
+
+=== Definitions
+
+[id="{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupytergateway"]
+==== JupyterGateway 
+
+JupyterGateway is the Schema for the jupytergateways API
+
+.Appears In:
+****
+- xref:{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupytergatewaylist[$$JupyterGatewayList$$]
+****
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`apiVersion`* __string__ | `kubeflow.tkestack.io/v1alpha1`
+| *`kind`* __string__ | `JupyterGateway`
+| *`TypeMeta`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#typemeta-v1-meta[$$TypeMeta$$]__ | 
+| *`metadata`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#objectmeta-v1-meta[$$ObjectMeta$$]__ | Refer to Kubernetes API documentation for fields of `metadata`.
+
+| *`spec`* __xref:{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupytergatewayspec[$$JupyterGatewaySpec$$]__ | 
+| *`status`* __xref:{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupytergatewaystatus[$$JupyterGatewayStatus$$]__ | 
+|===
+
+
+[id="{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupytergatewaylist"]
+==== JupyterGatewayList 
+
+JupyterGatewayList contains a list of JupyterGateway
+
+
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`apiVersion`* __string__ | `kubeflow.tkestack.io/v1alpha1`
+| *`kind`* __string__ | `JupyterGatewayList`
+| *`TypeMeta`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#typemeta-v1-meta[$$TypeMeta$$]__ | 
+| *`metadata`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#listmeta-v1-meta[$$ListMeta$$]__ | Refer to Kubernetes API documentation for fields of `metadata`.
+
+| *`items`* __xref:{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupytergateway[$$JupyterGateway$$]__ | 
+|===
+
+
+[id="{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupytergatewayspec"]
+==== JupyterGatewaySpec 
+
+JupyterGatewaySpec defines the desired state of JupyterGateway
+
+.Appears In:
+****
+- xref:{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupytergateway[$$JupyterGateway$$]
+****
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`kernels`* __string array__ | We will add kernels at runtime, thus we do not make it a type.
+| *`defaultKernel`* __string__ | 
+| *`cullIdleTimeout`* __integer__ | Ref https://jupyter-notebook.readthedocs.io/en/stable/config.html
+| *`cullInterval`* __integer__ | 
+| *`resources`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#resourcerequirements-v1-core[$$ResourceRequirements$$]__ | Compute Resources required by this container. Cannot be updated. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+| *`clusterRole`* __string__ | 
+|===
+
+
+[id="{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupytergatewaystatus"]
+==== JupyterGatewayStatus 
+
+JupyterGatewayStatus defines the observed state of JupyterGateway
+
+.Appears In:
+****
+- xref:{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupytergateway[$$JupyterGateway$$]
+****
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`DeploymentStatus`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#deploymentstatus-v1-apps[$$DeploymentStatus$$]__ | 
+|===
+
+
+[id="{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupyternotebook"]
+==== JupyterNotebook 
+
+JupyterNotebook is the Schema for the jupyternotebooks API
+
+.Appears In:
+****
+- xref:{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupyternotebooklist[$$JupyterNotebookList$$]
+****
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`apiVersion`* __string__ | `kubeflow.tkestack.io/v1alpha1`
+| *`kind`* __string__ | `JupyterNotebook`
+| *`TypeMeta`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#typemeta-v1-meta[$$TypeMeta$$]__ | 
+| *`metadata`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#objectmeta-v1-meta[$$ObjectMeta$$]__ | Refer to Kubernetes API documentation for fields of `metadata`.
+
+| *`spec`* __xref:{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupyternotebookspec[$$JupyterNotebookSpec$$]__ | 
+| *`status`* __xref:{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupyternotebookstatus[$$JupyterNotebookStatus$$]__ | 
+|===
+
+
+[id="{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupyternotebooklist"]
+==== JupyterNotebookList 
+
+JupyterNotebookList contains a list of JupyterNotebook
+
+
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`apiVersion`* __string__ | `kubeflow.tkestack.io/v1alpha1`
+| *`kind`* __string__ | `JupyterNotebookList`
+| *`TypeMeta`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#typemeta-v1-meta[$$TypeMeta$$]__ | 
+| *`metadata`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#listmeta-v1-meta[$$ListMeta$$]__ | Refer to Kubernetes API documentation for fields of `metadata`.
+
+| *`items`* __xref:{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupyternotebook[$$JupyterNotebook$$]__ | 
+|===
+
+
+[id="{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupyternotebookspec"]
+==== JupyterNotebookSpec 
+
+JupyterNotebookSpec defines the desired state of JupyterNotebook
+
+.Appears In:
+****
+- xref:{anchor_prefix}-github-com-tkestack-jupyter-operator-api-v1alpha1-jupyternotebook[$$JupyterNotebook$$]
+****
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`gateway`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#objectreference-v1-core[$$ObjectReference$$]__ | 
+| *`resources`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#resourcerequirements-v1-core[$$ResourceRequirements$$]__ | Compute Resources required by this container. Cannot be updated. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+|===
+
+
+
+

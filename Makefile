@@ -52,7 +52,15 @@ vet:
 
 # Generate code
 generate: controller-gen
-	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./..."
+	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./api/..."
+
+api-reference: install-tools ## Generate API reference documentation
+	crd-ref-docs \
+		--source-path ./api/v1alpha1 \
+		--config ./docs/api/autogen/config.yaml \
+		--templates-dir ./docs/api/autogen/templates \
+		--output-path ./docs/api/generated.asciidoc \
+		--max-depth 30
 
 # Build the docker image
 docker-build: test
@@ -93,3 +101,6 @@ KUSTOMIZE=$(GOBIN)/kustomize
 else
 KUSTOMIZE=$(shell which kustomize)
 endif
+
+install-tools:
+	go get github.com/elastic/crd-ref-docs
