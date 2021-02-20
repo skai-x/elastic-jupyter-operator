@@ -83,6 +83,9 @@ func (g generator) DesiredDeploymentWithoutOwner() *appsv1.Deployment {
 		d.Spec.Template.Spec.Containers[0].Args = append(
 			d.Spec.Template.Spec.Containers[0].Args, "--gateway-url", gatewayURL)
 	}
+	if g.nb.Spec.Resources != nil {
+		d.Spec.Template.Spec.Containers[0].Resources = *g.nb.Spec.Resources
+	}
 
 	return d
 }

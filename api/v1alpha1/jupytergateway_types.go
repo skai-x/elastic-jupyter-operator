@@ -18,6 +18,7 @@ package v1alpha1
 
 import (
 	appsv1 "k8s.io/api/apps/v1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -29,6 +30,12 @@ type JupyterGatewaySpec struct {
 	// Ref https://jupyter-notebook.readthedocs.io/en/stable/config.html
 	CullIdleTimeout *int32 `json:"cullIdleTimeout,omitempty"`
 	CullInterval    *int32 `json:"cullInterval,omitempty"`
+
+	// Compute Resources required by this container.
+	// Cannot be updated.
+	// More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+	// +optional
+	Resources *v1.ResourceRequirements `json:"resources,omitempty"`
 
 	ClusterRole *string `json:"clusterRole,omitempty"`
 }

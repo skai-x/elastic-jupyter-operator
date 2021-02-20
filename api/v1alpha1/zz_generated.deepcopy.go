@@ -107,6 +107,11 @@ func (in *JupyterGatewaySpec) DeepCopyInto(out *JupyterGatewaySpec) {
 		*out = new(int32)
 		**out = **in
 	}
+	if in.Resources != nil {
+		in, out := &in.Resources, &out.Resources
+		*out = new(v1.ResourceRequirements)
+		(*in).DeepCopyInto(*out)
+	}
 	if in.ClusterRole != nil {
 		in, out := &in.ClusterRole, &out.ClusterRole
 		*out = new(string)
@@ -206,6 +211,11 @@ func (in *JupyterNotebookSpec) DeepCopyInto(out *JupyterNotebookSpec) {
 		in, out := &in.Gateway, &out.Gateway
 		*out = new(v1.ObjectReference)
 		**out = **in
+	}
+	if in.Resources != nil {
+		in, out := &in.Resources, &out.Resources
+		*out = new(v1.ResourceRequirements)
+		(*in).DeepCopyInto(*out)
 	}
 }
 

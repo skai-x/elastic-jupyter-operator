@@ -220,6 +220,9 @@ func (g generator) DesiredDeploymentWithoutOwner(
 		d.Spec.Template.Spec.Containers[0].Env = append(
 			d.Spec.Template.Spec.Containers[0].Env, env)
 	}
+	if g.gateway.Spec.Resources != nil {
+		d.Spec.Template.Spec.Containers[0].Resources = *g.gateway.Spec.Resources
+	}
 
 	return d
 }
