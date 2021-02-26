@@ -108,7 +108,7 @@ func (g generator) DesiredRoleBinding(
 		},
 		Subjects: []rbacv1.Subject{
 			{
-				Kind:      sa.Kind,
+				Kind:      "ServiceAccount",
 				Name:      sa.Name,
 				Namespace: sa.Namespace,
 			},

@@ -39,20 +39,53 @@ spec:
             clusterRole:
               type: string
             cullIdleTimeout:
-              description: Ref https://jupyter-notebook.readthedocs.io/en/stable/config.html
+              description: Timeout (in seconds) after which a kernel is considered
+                idle and ready to be culled. Values of 0 or lower disable culling.
+                Very short timeouts may result in kernels being culled for users with
+                poor network connections. Ref https://jupyter-notebook.readthedocs.io/en/stable/config.html
               format: int32
               type: integer
             cullInterval:
+              description: The interval (in seconds) on which to check for idle kernels
+                exceeding the cull timeout value.
               format: int32
               type: integer
             defaultKernel:
+              description: DefaultKernel defines the default kernel in the gateway.
               type: string
             kernels:
-              description: We will add kernels at runtime, thus we do not make it
-                a type.
+              description: Knernels defines the kernels in the gateway. We will add
+                kernels at runtime, thus we do not make it a type.
               items:
                 type: string
               type: array
+            resources:
+              description: 'Compute Resources required by this container. Cannot be
+                updated. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+              properties:
+                limits:
+                  additionalProperties:
+                    anyOf:
+                    - type: integer
+                    - type: string
+                    pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                    x-kubernetes-int-or-string: true
+                  description: 'Limits describes the maximum amount of compute resources
+                    allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                  type: object
+                requests:
+                  additionalProperties:
+                    anyOf:
+                    - type: integer
+                    - type: string
+                    pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                    x-kubernetes-int-or-string: true
+                  description: 'Requests describes the minimum amount of compute resources
+                    required. If Requests is omitted for a container, it defaults
+                    to Limits if that is explicitly specified, otherwise to an implementation-defined
+                    value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                  type: object
+              type: object
           type: object
         status:
           description: JupyterGatewayStatus defines the observed state of JupyterGateway
