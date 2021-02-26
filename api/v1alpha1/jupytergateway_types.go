@@ -24,12 +24,21 @@ import (
 
 // JupyterGatewaySpec defines the desired state of JupyterGateway
 type JupyterGatewaySpec struct {
+	// Knernels defines the kernels in the gateway.
 	// We will add kernels at runtime, thus we do not make it a type.
-	Kernels       []string `json:"kernels,omitempty"`
-	DefaultKernel *string  `json:"defaultKernel,omitempty"`
+	Kernels []string `json:"kernels,omitempty"`
+	// DefaultKernel defines the default kernel in the gateway.
+	DefaultKernel *string `json:"defaultKernel,omitempty"`
+	// Timeout (in seconds) after which a kernel is considered idle and
+	// ready to be culled. Values of 0 or lower disable culling. Very
+	// short timeouts may result in kernels being culled for users
+	// with poor network connections.
 	// Ref https://jupyter-notebook.readthedocs.io/en/stable/config.html
 	CullIdleTimeout *int32 `json:"cullIdleTimeout,omitempty"`
-	CullInterval    *int32 `json:"cullInterval,omitempty"`
+
+	// The interval (in seconds) on which to check for idle kernels
+	// exceeding the cull timeout value.
+	CullInterval *int32 `json:"cullInterval,omitempty"`
 
 	// Compute Resources required by this container.
 	// Cannot be updated.
@@ -39,8 +48,6 @@ type JupyterGatewaySpec struct {
 
 	ClusterRole *string `json:"clusterRole,omitempty"`
 }
-
-type KernelType string
 
 // JupyterGatewayStatus defines the observed state of JupyterGateway
 type JupyterGatewayStatus struct {
