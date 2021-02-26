@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - command:
-        - /manager
+        - /elastic-jupyter-operator
         args:
         - --enable-leader-election
         image: ccr.ccs.tencentyun.com/kubeflow-oteam/elastic-jupyter-operator:latest

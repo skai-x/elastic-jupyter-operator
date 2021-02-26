@@ -15,8 +15,8 @@ Jupyter operator 主要面向这三个问题，设计了两个 CRD，实现了�
 ## 部署
 
 ```bash
-$ kubectl apply -f ./hack/enterprise_gateway/prepare.yaml
-$ make deploy
+kubectl apply -f ./hack/enterprise_gateway/prepare.yaml
+make deploy
 ```
 
 ## 架构
@@ -51,6 +51,10 @@ Jupyter Enterprise Gateway 提供了弹性 Jupyter 服务的基础，elastic-jup
 
 首先，创建一个 Jupyter Gateway CR：
 
+```bash
+kubectl apply -f ./config/samples/kubeflow.tkestack.io_v1alpha1_jupytergateway.yaml
+```
+
 ```yaml
 apiVersion: kubeflow.tkestack.io/v1alpha1
 kind: JupyterGateway
@@ -63,6 +67,10 @@ spec:
 其中 `cullIdleTimeout` 是一个配置项，在 Kernel 空闲指定 `cullIdleTimeout` 秒内，会由 Gateway 回收对应 Kernel 以释放资源。
 
 其次需要创建一个 Jupyter Notebook CR 实例，并且指定对应的 Gateway CR：
+
+```bash
+kubectl apply -f ./config/samples/kubeflow.tkestack.io_v1alpha1_jupytergateway.yaml
+```
 
 ```yaml
 apiVersion: kubeflow.tkestack.io/v1alpha1
