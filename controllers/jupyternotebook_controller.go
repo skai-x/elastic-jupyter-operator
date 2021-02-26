@@ -26,9 +26,9 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/tkestack/jupyter-operator/api/v1alpha1"
-	kubeflowtkestackiov1alpha1 "github.com/tkestack/jupyter-operator/api/v1alpha1"
-	"github.com/tkestack/jupyter-operator/pkg/notebook"
+	"github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
+	kubeflowtkestackiov1alpha1 "github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
+	"github.com/tkestack/elastic-jupyter-operator/pkg/notebook"
 )
 
 // JupyterNotebookReconciler reconciles a JupyterNotebook object

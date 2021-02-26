@@ -1,4 +1,4 @@
-# jupyter-operator: Elastic Jupyter on Kubernetes
+# elastic-jupyter-operator: Elastic Jupyter on Kubernetes
 
 Kubernetes 原生的弹性 Jupyter 即服务
 
@@ -21,7 +21,7 @@ $ make deploy
 
 ## 架构
 
-jupyter-operator 的架构如图所示，`JupyterGateway` 和 `JupyterNotebook` 是两个 CRD。其中 Notebook 是 Jupyter Notebook 的前端服务，负责面向用户提供用户界面，并且与后端服务通过 HTTPS 和 Websocket 进行通信，处理用户的计算请求。
+elastic-jupyter-operator 的架构如图所示，`JupyterGateway` 和 `JupyterNotebook` 是两个 CRD。其中 Notebook 是 Jupyter Notebook 的前端服务，负责面向用户提供用户界面，并且与后端服务通过 HTTPS 和 Websocket 进行通信，处理用户的计算请求。
 
 Gateway 是对应的后端服务。它负责处理来自 Notebook CR 的请求，通过调用 Kubernetes 的 API 按需创建出真正负责处理用户计算任务的 Kernel。
 
@@ -35,17 +35,17 @@ Gateway 是对应的后端服务。它负责处理来自 Notebook CR 的请求�
 
 ## 对比
 
-jupyter-operator 部分参考了 Kubeflow jupyter-controller 和 Jupyter enterprise gateway 的设计，这里介绍了与两者的不同。
+elastic-jupyter-operator 部分参考了 Kubeflow jupyter-controller 和 Jupyter enterprise gateway 的设计，这里介绍了与两者的不同。
 
 ### 与 Kubeflow Jupyter Controller 的比较
 
-Kubeflow Jupyter Controller 也提供了在 Kubernetes 上部署 Jupyter Notebook 的解决方案。相比于 jupyter-operator，其最大的问题在于它在一个 Pod 中运行了 Notebook 前端与负责计算的 Kernel，导致无法在 Kernel 空闲时回收资源。
+Kubeflow Jupyter Controller 也提供了在 Kubernetes 上部署 Jupyter Notebook 的解决方案。相比于 elastic-jupyter-operator，其最大的问题在于它在一个 Pod 中运行了 Notebook 前端与负责计算的 Kernel，导致无法在 Kernel 空闲时回收资源。
 
 <p align="center"><img src="docs/images/kubeflow.png" width="300"></p>
 
 ### 与 Jupyter Enterprise Gateway 的比较
 
-Jupyter Enterprise Gateway 提供了弹性 Jupyter 服务的基础，jupyter-operator 也是基于它来设计和实现的。与 Jupyter Enterprise Gateway 相比，jupyter-operator 提供了云原生的实现。Jupyter Enterprise Gateway 需要用户自行部署和维护 Gateway 和 Notebook，而 jupyter-operator 则简化了在 Kubernetes 上运维的复杂度。
+Jupyter Enterprise Gateway 提供了弹性 Jupyter 服务的基础，elastic-jupyter-operator 也是基于它来设计和实现的。与 Jupyter Enterprise Gateway 相比，elastic-jupyter-operator 提供了云原生的实现。Jupyter Enterprise Gateway 需要用户自行部署和维护 Gateway 和 Notebook，而 elastic-jupyter-operator 则简化了在 Kubernetes 上运维的复杂度。
 
 ## 使用
 

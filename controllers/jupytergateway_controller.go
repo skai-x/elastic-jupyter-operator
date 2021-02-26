@@ -29,9 +29,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
-	"github.com/tkestack/jupyter-operator/api/v1alpha1"
-	kubeflowtkestackiov1alpha1 "github.com/tkestack/jupyter-operator/api/v1alpha1"
-	"github.com/tkestack/jupyter-operator/pkg/gateway"
+	"github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
+	kubeflowtkestackiov1alpha1 "github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
+	"github.com/tkestack/elastic-jupyter-operator/pkg/gateway"
 )
 
 // JupyterGatewayReconciler reconciles a JupyterGateway object

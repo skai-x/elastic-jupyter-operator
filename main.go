@@ -27,8 +27,8 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	kubeflowtkestackiov1alpha1 "github.com/tkestack/jupyter-operator/api/v1alpha1"
-	"github.com/tkestack/jupyter-operator/controllers"
+	kubeflowtkestackiov1alpha1 "github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
+	"github.com/tkestack/elastic-jupyter-operator/controllers"
 	// +kubebuilder:scaffold:imports
 )
 

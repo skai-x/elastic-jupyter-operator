@@ -27,7 +27,7 @@ spec:
         - /manager
         args:
         - --enable-leader-election
-        image: ccr.ccs.tencentyun.com/kubeflow-oteam/jupyter-operator:latest
+        image: ccr.ccs.tencentyun.com/kubeflow-oteam/elastic-jupyter-operator:latest
         name: manager
         resources:
           limits:

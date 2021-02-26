@@ -1,6 +1,6 @@
 layout: go.kubebuilder.io/v2
-projectName: jupyter-operator
-repo: github.com/tkestack/jupyter-operator
+projectName: elastic-jupyter-operator
+repo: github.com/tkestack/elastic-jupyter-operator
 resources:
 - group: kubeflow.tkestack.io
   kind: JupyterNotebook

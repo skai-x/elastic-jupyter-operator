@@ -31,7 +31,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
-	"github.com/tkestack/jupyter-operator/api/v1alpha1"
+	"github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
 )
 
 type Reconciler struct {

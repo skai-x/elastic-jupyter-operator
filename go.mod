@@ -1,4 +1,4 @@
-module github.com/tkestack/jupyter-operator
+module github.com/tkestack/elastic-jupyter-operator
 
 go 1.13
 
