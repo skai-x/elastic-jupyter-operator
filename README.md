@@ -10,6 +10,8 @@ Kubernetes 原生的弹性 Jupyter 即服务
 - 资源延迟申请，在使用时按需申请对应 CPU/内存/GPU 资源
 - 多 Jupyter 共享资源池，提高资源利用率
 
+<p align="center"><img src="docs/images/overview.png" width="300"></p>
+
 ## 部署
 
 ```bash
