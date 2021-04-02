@@ -69,7 +69,7 @@ spec:
 其次需要创建一个 Jupyter Notebook CR 实例，并且指定对应的 Gateway CR：
 
 ```bash
-kubectl apply -f ./config/samples/kubeflow.tkestack.io_v1alpha1_jupytergateway.yaml
+kubectl apply -f ./config/samples/kubeflow.tkestack.io_v1alpha1_jupyternotebook.yaml
 ```
 
 ```yaml
