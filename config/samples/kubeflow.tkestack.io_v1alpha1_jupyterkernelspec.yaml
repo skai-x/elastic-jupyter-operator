@@ -1,0 +1,15 @@
+apiVersion: kubeflow.tkestack.io/v1alpha1
+kind: JupyterKernelSpec
+metadata:
+  name: jupyterkernelspec-sample
+spec:
+  language: Python
+  displayName: "Python on Kubernetes with Tensorflow"
+  image: elyra/kernel-tf-py:VERSION
+  command: 
+  - "python"
+  - "/usr/local/share/jupyter/scripts/launch_kubernetes.py"
+  - "--RemoteProcessProxy.kernel-id"
+  - "{kernel_id}"
+  - "--RemoteProcessProxy.response-address"
+  - "{response_address}"
