@@ -20,11 +20,14 @@ import (
 	"context"
 
 	"github.com/go-logr/logr"
+	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/source"
 
 	"github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
 	kubeflowtkestackiov1alpha1 "github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
@@ -74,5 +77,10 @@ func (r *JupyterNotebookReconciler) Reconcile(req ctrl.Request) (ctrl.Result, er
 func (r *JupyterNotebookReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&kubeflowtkestackiov1alpha1.JupyterNotebook{}).
+		Watches(&source.Kind{Type: &appsv1.Deployment{}},
+			&handler.EnqueueRequestForOwner{
+				IsController: true,
+				OwnerType:    &v1alpha1.JupyterNotebook{},
+			}).
 		Complete(r)
 }

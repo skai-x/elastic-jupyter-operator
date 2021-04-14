@@ -20,14 +20,16 @@ import (
 	"context"
 
 	"github.com/go-logr/logr"
-	"github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
+	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/record"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+
+	"github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
 )
 
 type Reconciler struct {
@@ -43,7 +45,7 @@ type Reconciler struct {
 func NewReconciler(cli client.Client, l logr.Logger,
 	r record.EventRecorder, s *runtime.Scheme,
 	i *v1alpha1.JupyterNotebook) (*Reconciler, error) {
-	g, err := newGenerator(i)
+	g, err := newGenerator(i, l)
 	if err != nil {
 		return nil, err
 	}
@@ -77,6 +79,8 @@ func (r Reconciler) reconcileDeployment() error {
 	actual := &appsv1.Deployment{}
 	err := r.cli.Get(context.TODO(),
 		types.NamespacedName{Name: desired.GetName(), Namespace: desired.GetNamespace()}, actual)
+
+	// Create deployment if not found
 	if err != nil && errors.IsNotFound(err) {
 		r.log.Info("Creating deployment", "namespace", desired.Namespace, "name", desired.Name)
 
@@ -90,5 +94,17 @@ func (r Reconciler) reconcileDeployment() error {
 			"deployment", desired.Name)
 		return err
 	}
+
+	// Update deployment from desired to actural
+	if !equality.Semantic.DeepEqual(desired.Spec.Template, actual.Spec.Template) {
+		actual.Spec.Template = desired.Spec.Template
+		if err := r.cli.Update(context.TODO(), actual); err != nil {
+			r.log.Error(err, "Failed to update deployment")
+			return err
+		} else {
+			r.log.Info("deployment updated")
+		}
+	}
+
 	return nil
 }

@@ -28,11 +28,7 @@ import (
 type JupyterNotebookSpec struct {
 	Gateway *v1.ObjectReference `json:"gateway,omitempty"`
 
-	// Compute Resources required by this container.
-	// Cannot be updated.
-	// More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
-	// +optional
-	Resources *v1.ResourceRequirements `json:"resources,omitempty"`
+	Template *v1.PodTemplateSpec `json:"template,omitempty"`
 }
 
 // JupyterNotebookStatus defines the observed state of JupyterNotebook

@@ -19,6 +19,7 @@ package notebook
 import (
 	"fmt"
 
+	"github.com/go-logr/logr"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -37,27 +38,65 @@ const (
 )
 
 type generator struct {
-	nb *v1alpha1.JupyterNotebook
+	nb  *v1alpha1.JupyterNotebook
+	log logr.Logger
 }
 
 // newGenerator creates a new Generator.
-func newGenerator(nb *v1alpha1.JupyterNotebook) (
+func newGenerator(nb *v1alpha1.JupyterNotebook, l logr.Logger) (
 	*generator, error) {
 	if nb == nil {
 		return nil, fmt.Errorf("Got nil when initializing Generator")
 	}
 	g := &generator{
-		nb: nb,
+		nb:  nb,
+		log: l,
 	}
 
 	return g, nil
 }
 
 func (g generator) DesiredDeploymentWithoutOwner() *appsv1.Deployment {
+	if g.nb.Spec.Template == nil && g.nb.Spec.Gateway == nil {
+		panic("You must apply a gateway or template")
+	}
+
+	podSpec := v1.PodSpec{}
+	podLabels := g.labels()
 	labels := g.labels()
 	selector := &metav1.LabelSelector{
 		MatchLabels: labels,
 	}
+
+	if g.nb.Spec.Template != nil {
+		if g.nb.Spec.Template.Labels != nil {
+			for k, v := range g.nb.Spec.Template.Labels {
+				podLabels[k] = v
+			}
+		}
+		podSpec = g.nb.Spec.Template.Spec
+	} else {
+		podSpec = v1.PodSpec{
+			Containers: []v1.Container{
+				{
+					Name:            defaultContainerName,
+					Image:           defaultImage,
+					ImagePullPolicy: v1.PullIfNotPresent,
+					Args: []string{
+						"start-notebook.sh",
+					},
+					Ports: []v1.ContainerPort{
+						{
+							Name:          defaultPortName,
+							ContainerPort: defaultPort,
+							Protocol:      v1.ProtocolTCP,
+						},
+					},
+				},
+			},
+		}
+	}
+
 	d := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: g.nb.Namespace,
@@ -68,27 +107,9 @@ func (g generator) DesiredDeploymentWithoutOwner() *appsv1.Deployment {
 			Selector: selector,
 			Template: v1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels: labels,
+					Labels: podLabels,
 				},
-				Spec: v1.PodSpec{
-					Containers: []v1.Container{
-						{
-							Name:            defaultContainerName,
-							Image:           defaultImage,
-							ImagePullPolicy: v1.PullIfNotPresent,
-							Args: []string{
-								"start-notebook.sh",
-							},
-							Ports: []v1.ContainerPort{
-								{
-									Name:          defaultPortName,
-									ContainerPort: defaultPort,
-									Protocol:      v1.ProtocolTCP,
-								},
-							},
-						},
-					},
-				},
+				Spec: podSpec,
 			},
 		},
 	}
@@ -98,9 +119,6 @@ func (g generator) DesiredDeploymentWithoutOwner() *appsv1.Deployment {
 			g.nb.Spec.Gateway.Name, g.nb.Spec.Gateway.Namespace, defaultPort)
 		d.Spec.Template.Spec.Containers[0].Args = append(
 			d.Spec.Template.Spec.Containers[0].Args, "--gateway-url", gatewayURL)
-	}
-	if g.nb.Spec.Resources != nil {
-		d.Spec.Template.Spec.Containers[0].Resources = *g.nb.Spec.Resources
 	}
 
 	return d
