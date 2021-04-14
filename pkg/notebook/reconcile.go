@@ -69,7 +69,6 @@ func (r Reconciler) Reconcile() error {
 func (r Reconciler) reconcileDeployment() error {
 	desired, err := r.gen.DesiredDeploymentWithoutOwner()
 	if err != nil {
-		r.log.Error(err, "Failed to get desired deployment")
 		return err
 	}
 
