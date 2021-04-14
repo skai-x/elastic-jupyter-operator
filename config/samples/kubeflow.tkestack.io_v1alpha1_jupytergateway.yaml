@@ -4,6 +4,8 @@ metadata:
   name: jupytergateway-sample
 spec:
   cullIdleTimeout: 3600
+  kernels: 
+  - python-kubernetes
   resources:
     requests:
       memory: "64Mi"
