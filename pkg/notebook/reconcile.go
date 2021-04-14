@@ -67,10 +67,10 @@ func (r Reconciler) Reconcile() error {
 }
 
 func (r Reconciler) reconcileDeployment() error {
-	desired, err_ := r.gen.DesiredDeploymentWithoutOwner()
-	if err_ != nil {
-		r.log.Error(err_, "Failed to get desired deployment")
-		return err_
+	desired, err := r.gen.DesiredDeploymentWithoutOwner()
+	if err != nil {
+		r.log.Error(err, "Failed to get desired deployment")
+		return err
 	}
 
 	if err := controllerutil.SetControllerReference(
@@ -81,7 +81,7 @@ func (r Reconciler) reconcileDeployment() error {
 	}
 
 	actual := &appsv1.Deployment{}
-	err := r.cli.Get(context.TODO(),
+	err = r.cli.Get(context.TODO(),
 		types.NamespacedName{Name: desired.GetName(), Namespace: desired.GetNamespace()}, actual)
 
 	// Create deployment if not found
