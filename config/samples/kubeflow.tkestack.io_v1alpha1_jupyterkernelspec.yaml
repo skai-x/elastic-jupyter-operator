@@ -4,7 +4,7 @@ metadata:
   name: python-kubernetes
 spec:
   language: Python
-  displayName: "Python on Kubernetes with Tensorflow"
+  displayName: "Python on Kubernetes as a JupyterKernelSpec"
   image: ccr.ccs.tencentyun.com/kubeflow-oteam/jupyter-kernel-py:2.5.0
   command: 
   - "python"
