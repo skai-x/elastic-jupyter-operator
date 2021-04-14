@@ -72,6 +72,7 @@ This proposal is not to:
 The design proposal involves four main changes to elastic jupyter operator and enterprise gateway:
 
 - Kernel CRD (new): It is used to manage kernels on Kubernetes
+- KernelSpec CRD (new): It is used to configure the kernel specs in runtime
 - JupyterGateway CRD: Changes is made to support updating kernels on the fly
 - Kubeflow Kernel Launcher (new): It is used to launch Kernel CRD inside the gateway
 - Kubeflow Process Proxy (new): It is used to manage kernels in enterprise gateway
@@ -91,7 +92,41 @@ spec:
 
 ### KernelSpec CRD
 
-cluster scoped.
+> The primary vehicle for indicating a given kernel should be handled in a different manner is the kernel specification, otherwise known as the kernel spec. Enterprise Gateway leverages the natively extensible metadata stanza to introduce a new stanza named process_proxy.
+>
+> The process_proxy stanza identifies the class that provides the kernel’s process abstraction (while allowing for future extensions). This class then provides the kernel’s lifecycle management operations relative to the managed resource or functional equivalent.
+>
+> Here’s an example of a kernel specification that uses the DistributedProcessProxy class for its abstraction:
+>
+```json
+{
+  "language": "scala",
+  "display_name": "Spark - Scala (YARN Client Mode)",
+  "metadata": {
+    "process_proxy": {
+      "class_name": "enterprise_gateway.services.processproxies.distributed.DistributedProcessProxy"
+    }
+  },
+  "env": {
+    "SPARK_HOME": "/usr/hdp/current/spark2-client",
+    "__TOREE_SPARK_OPTS__": "--master yarn --deploy-mode client --name ${KERNEL_ID:-ERROR__NO__KERNEL_ID}",
+    "__TOREE_OPTS__": "",
+    "LAUNCH_OPTS": "",
+    "DEFAULT_INTERPRETER": "Scala"
+  },
+  "argv": [
+    "/usr/local/share/jupyter/kernels/spark_scala_yarn_client/bin/run.sh",
+    "--RemoteProcessProxy.kernel-id",
+    "{kernel_id}",
+    "--RemoteProcessProxy.response-address",
+    "{response_address}",
+    "--RemoteProcessProxy.public-key",
+    "{public_key}"
+  ]
+}
+```
+
+The kernel specifications are placed in the docker image at build time, which is not easy to maintain on the fly. The kernelspec CRD is defined to support dynamic update. The CRD specification looks like this:
 
 ```yaml
 spec:
@@ -108,10 +143,11 @@ spec:
   - "{response_address}"
 ```
 
-- Create configmap for default specs and scripts when initialization
-- Create configmap for new specs
+When a JupyterKernelSpec CR is created, we will create the corresponding configmap. And the configmap will be used as a mount volume in the gateway.
 
 ### JupyterGateway CRD
+
+The specification generation logic needs to be changed to support the new JupyterKernelSpec CRD.
 
 ```yaml
 spec:
@@ -122,6 +158,12 @@ spec:
   ...
 ```
 
+When `kernels` are defined in the spec, we should get the jupyter kernelspec CRs from the kubernetes api server, then mount the configmaps as volumes into the gateway container.
+
 ### Kernel Launcher
 
 ### KubeflowProcessProxy
+
+## Reference
+
+- [Jupyter Enterprise Gateway System Architecture](https://jupyter-enterprise-gateway.readthedocs.io/en/latest/system-architecture.html)
