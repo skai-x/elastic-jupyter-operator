@@ -8,4 +8,7 @@ resources:
 - group: kubeflow.tkestack.io
   kind: JupyterGateway
   version: v1alpha1
+- group: kubeflow.tkestack.io
+  kind: JupyterKernelSpec
+  version: v1alpha1
 version: 3-alpha

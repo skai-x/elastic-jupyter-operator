@@ -1,0 +1,20 @@
+# permissions for end users to view jupyterkernelspecs.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: jupyterkernelspec-viewer-role
+rules:
+- apiGroups:
+  - kubeflow.tkestack.io
+  resources:
+  - jupyterkernelspecs
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - kubeflow.tkestack.io
+  resources:
+  - jupyterkernelspecs/status
+  verbs:
+  - get

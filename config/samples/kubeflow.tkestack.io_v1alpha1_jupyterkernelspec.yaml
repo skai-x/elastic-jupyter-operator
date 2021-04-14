@@ -1,0 +1,18 @@
+apiVersion: kubeflow.tkestack.io/v1alpha1
+kind: JupyterKernelSpec
+metadata:
+  name: python-kubernetes
+spec:
+  language: Python
+  displayName: "Python on Kubernetes as a JupyterKernelSpec"
+  image: ccr.ccs.tencentyun.com/kubeflow-oteam/jupyter-kernel-py:2.5.0
+  command: 
+  - "python"
+  # Use the default scripts to launch the kernel.
+  - "/usr/local/share/jupyter/kernels/python_kubernetes/scripts/launch_kubernetes.py"
+  - "--RemoteProcessProxy.kernel-id"
+  - "{kernel_id}"
+  - "--RemoteProcessProxy.port-range"
+  - "{port_range}"
+  - "--RemoteProcessProxy.response-address"
+  - "{response_address}"

@@ -47,7 +47,7 @@ type Reconciler struct {
 func NewReconciler(cli client.Client, l logr.Logger,
 	r record.EventRecorder, s *runtime.Scheme,
 	i *v1alpha1.JupyterGateway) (*Reconciler, error) {
-	g, err := newGenerator(i)
+	g, err := newGenerator(cli, i)
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +177,10 @@ func (r Reconciler) reconcileService() error {
 }
 
 func (r Reconciler) reconcileDeployment(sa string) error {
-	desired := r.gen.DesiredDeploymentWithoutOwner(sa)
+	desired, err := r.gen.DesiredDeploymentWithoutOwner(sa)
+	if err != nil {
+		return err
+	}
 
 	if err := controllerutil.SetControllerReference(
 		r.instance, desired, r.scheme); err != nil {
@@ -187,7 +190,7 @@ func (r Reconciler) reconcileDeployment(sa string) error {
 	}
 
 	actual := &appsv1.Deployment{}
-	err := r.cli.Get(context.TODO(),
+	err = r.cli.Get(context.TODO(),
 		types.NamespacedName{Name: desired.GetName(), Namespace: desired.GetNamespace()}, actual)
 	if err != nil && errors.IsNotFound(err) {
 		r.log.Info("Creating deployment", "namespace", desired.Namespace, "name", desired.Name)

@@ -1,0 +1,15 @@
+apiVersion: kubeflow.tkestack.io/v1alpha1
+kind: JupyterGateway
+metadata:
+  name: jupytergateway-sample
+spec:
+  cullIdleTimeout: 3600
+  kernels: 
+  - python-kubernetes
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "250m"
+    limits:
+      memory: "128Mi"
+      cpu: "500m"

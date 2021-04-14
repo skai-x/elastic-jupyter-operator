@@ -19,6 +19,7 @@
 package gateway
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"strings"
@@ -27,6 +28,8 @@ import (
 	v1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
 )
@@ -47,26 +50,27 @@ const (
 
 	cullTimeoutOpt = "--MappingKernelManager.cull_idle_timeout"
 	cullInterval   = "--MappingKernelManager.cull_interval"
-)
 
-var (
-	defaultKernels = "'r_kubernetes','python_kubernetes','python_tf_kubernetes','python_tf_gpu_kubernetes','scala_kubernetes','spark_r_kubernetes','spark_python_kubernetes','spark_scala_kubernetes'"
+	defaultKernelPath = "/usr/local/share/jupyter/kernels/"
+	defaultKernels    = "'r_kubernetes','python_kubernetes','python_tf_kubernetes','python_tf_gpu_kubernetes','scala_kubernetes','spark_r_kubernetes','spark_python_kubernetes','spark_scala_kubernetes'"
 )
 
 // generator defines the generator which is used to generate
 // desired specs.
 type generator struct {
 	gateway *v1alpha1.JupyterGateway
+	cli     client.Client
 }
 
 // newGenerator creates a new Generator.
-func newGenerator(gateway *v1alpha1.JupyterGateway) (
+func newGenerator(c client.Client, gateway *v1alpha1.JupyterGateway) (
 	*generator, error) {
 	if gateway == nil {
 		return nil, fmt.Errorf("Got nil when initializing Generator")
 	}
 	g := &generator{
 		gateway: gateway,
+		cli:     c,
 	}
 
 	return g, nil
@@ -141,7 +145,13 @@ func (g generator) DesiredServiceAccountWithoutOwner() *v1.ServiceAccount {
 // DesiredDeploymentWithoutOwner returns the desired deployment
 // without owner.
 func (g generator) DesiredDeploymentWithoutOwner(
-	sa string) *appsv1.Deployment {
+	sa string) (*appsv1.Deployment, error) {
+	// Generate volumes with the kernelspec CR.
+	volumes, err := g.volumes()
+	if err != nil {
+		return nil, err
+	}
+
 	labels := g.labels()
 	selector := &metav1.LabelSelector{
 		MatchLabels: labels,
@@ -160,6 +170,7 @@ func (g generator) DesiredDeploymentWithoutOwner(
 				},
 				Spec: v1.PodSpec{
 					ServiceAccountName: sa,
+					Volumes:            volumes,
 					Containers: []v1.Container{
 						{
 							Name:            defaultContainerName,
@@ -172,6 +183,8 @@ func (g generator) DesiredDeploymentWithoutOwner(
 									Protocol:      v1.ProtocolTCP,
 								},
 							},
+							Command:      []string{"/usr/local/bin/start-enterprise-gateway.sh"},
+							VolumeMounts: g.volumeMounts(volumes),
 							Env: []v1.EnvVar{
 								{
 									Name:  "EG_DEFAULT_KERNEL_NAME",
@@ -188,6 +201,15 @@ func (g generator) DesiredDeploymentWithoutOwner(
 								{
 									Name:  "EG_PORT",
 									Value: strconv.Itoa(defaultPort),
+								},
+								// --EnterpriseGatewayApp.port_range=<Unicode>
+								// Specifies the lower and upper port numbers from which ports are created. The
+								// bounded values are separated by '..' (e.g., 33245..34245 specifies a range
+								// of 1000 ports to be randomly selected). A range of zero (e.g., 33245..33245
+								// or 0..0) disables port-range enforcement.  (EG_PORT_RANGE env var)
+								{
+									Name:  "EG_PORT_RANGE",
+									Value: "0..0",
 								},
 								{
 									Name:  "EG_NAMESPACE",
@@ -243,7 +265,43 @@ func (g generator) DesiredDeploymentWithoutOwner(
 		d.Spec.Template.Spec.Containers[0].Resources = *g.gateway.Spec.Resources
 	}
 
-	return d
+	return d, nil
+}
+
+func (g generator) volumeMounts(
+	volumes []v1.Volume) []v1.VolumeMount {
+	volumeMounts := []v1.VolumeMount{}
+	for _, v := range volumes {
+		volumeMounts = append(volumeMounts, v1.VolumeMount{
+			Name:      v.Name,
+			ReadOnly:  true,
+			MountPath: fmt.Sprintf("%s/%s", defaultKernelPath, v.Name),
+		})
+	}
+	return volumeMounts
+}
+
+func (g generator) volumes() ([]v1.Volume, error) {
+	volumes := []v1.Volume{}
+	for _, k := range g.gateway.Spec.Kernels {
+		ks := &v1alpha1.JupyterKernelSpec{}
+		if err := g.cli.Get(context.TODO(), types.NamespacedName{
+			Namespace: g.gateway.Namespace,
+			Name:      k,
+		}, ks); err != nil {
+			return nil, err
+		}
+
+		volumes = append(volumes, v1.Volume{
+			Name: k,
+			VolumeSource: v1.VolumeSource{
+				ConfigMap: &v1.ConfigMapVolumeSource{
+					LocalObjectReference: v1.LocalObjectReference{Name: k},
+				},
+			},
+		})
+	}
+	return volumes, nil
 }
 
 func (g generator) defaultClusterRole() string {
@@ -262,7 +320,11 @@ func (g generator) labels() map[string]string {
 
 func (g generator) kernels() string {
 	if g.gateway.Spec.Kernels != nil {
-		return strings.Join(g.gateway.Spec.Kernels, ",")
+		ks := []string{}
+		for _, k := range g.gateway.Spec.Kernels {
+			ks = append(ks, fmt.Sprintf("'%s'", k))
+		}
+		return strings.Join(ks, ",")
 	}
 	return defaultKernels
 }
