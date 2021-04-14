@@ -8,7 +8,8 @@ spec:
   image: ccr.ccs.tencentyun.com/kubeflow-oteam/jupyter-kernel-py:2.5.0
   command: 
   - "python"
-  - "/usr/local/share/jupyter/scripts/launch_kubernetes.py"
+  # Use the default scripts to launch the kernel.
+  - "/usr/local/share/jupyter/kernels/python_kubernetes/scripts/launch_kubernetes.py"
   - "--RemoteProcessProxy.kernel-id"
   - "{kernel_id}"
   - "--RemoteProcessProxy.port-range"
