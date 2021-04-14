@@ -58,6 +58,7 @@ func newGenerator(nb *v1alpha1.JupyterNotebook, l logr.Logger) (
 
 func (g generator) DesiredDeploymentWithoutOwner() *appsv1.Deployment {
 	if g.nb.Spec.Template == nil && g.nb.Spec.Gateway == nil {
+		// TODO (Qingyu Wu): error handle
 		panic("You must apply a gateway or template")
 	}
 
