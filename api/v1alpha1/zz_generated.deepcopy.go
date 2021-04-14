@@ -313,9 +313,9 @@ func (in *JupyterNotebookSpec) DeepCopyInto(out *JupyterNotebookSpec) {
 		*out = new(v1.ObjectReference)
 		**out = **in
 	}
-	if in.Resources != nil {
-		in, out := &in.Resources, &out.Resources
-		*out = new(v1.ResourceRequirements)
+	if in.Template != nil {
+		in, out := &in.Template, &out.Template
+		*out = new(v1.PodTemplateSpec)
 		(*in).DeepCopyInto(*out)
 	}
 }
