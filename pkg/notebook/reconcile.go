@@ -67,7 +67,11 @@ func (r Reconciler) Reconcile() error {
 }
 
 func (r Reconciler) reconcileDeployment() error {
-	desired := r.gen.DesiredDeploymentWithoutOwner()
+	desired, err_ := r.gen.DesiredDeploymentWithoutOwner()
+	if err_ != nil {
+		r.log.Error(err_, "Failed to get desired deployment")
+		return err_
+	}
 
 	if err := controllerutil.SetControllerReference(
 		r.instance, desired, r.scheme); err != nil {

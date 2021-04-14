@@ -56,10 +56,9 @@ func newGenerator(nb *v1alpha1.JupyterNotebook, l logr.Logger) (
 	return g, nil
 }
 
-func (g generator) DesiredDeploymentWithoutOwner() *appsv1.Deployment {
+func (g generator) DesiredDeploymentWithoutOwner() (*appsv1.Deployment, error) {
 	if g.nb.Spec.Template == nil && g.nb.Spec.Gateway == nil {
-		// TODO (Qingyu Wu): error handle
-		panic("You must apply a gateway or template")
+		return nil, fmt.Errorf("no gateway and template applied")
 	}
 
 	podSpec := v1.PodSpec{}
@@ -122,7 +121,7 @@ func (g generator) DesiredDeploymentWithoutOwner() *appsv1.Deployment {
 			d.Spec.Template.Spec.Containers[0].Args, "--gateway-url", gatewayURL)
 	}
 
-	return d
+	return d, nil
 }
 
 func (g generator) labels() map[string]string {
