@@ -42,16 +42,15 @@ type Reconciler struct {
 	gen      *generator
 }
 
-func NewReconciler(cli client.Client, l logr.Logger,
+func NewReconciler(cli client.Client,
 	r record.EventRecorder, s *runtime.Scheme,
 	i *v1alpha1.JupyterNotebook) (*Reconciler, error) {
-	g, err := newGenerator(i, l)
+	g, err := newGenerator(i)
 	if err != nil {
 		return nil, err
 	}
 	return &Reconciler{
 		cli:      cli,
-		log:      l,
 		recorder: r,
 		scheme:   s,
 		instance: i,

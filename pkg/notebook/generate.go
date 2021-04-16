@@ -19,7 +19,6 @@ package notebook
 import (
 	"fmt"
 
-	"github.com/go-logr/logr"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -38,19 +37,17 @@ const (
 )
 
 type generator struct {
-	nb  *v1alpha1.JupyterNotebook
-	log logr.Logger
+	nb *v1alpha1.JupyterNotebook
 }
 
 // newGenerator creates a new Generator.
-func newGenerator(nb *v1alpha1.JupyterNotebook, l logr.Logger) (
+func newGenerator(nb *v1alpha1.JupyterNotebook) (
 	*generator, error) {
 	if nb == nil {
 		return nil, fmt.Errorf("Got nil when initializing Generator")
 	}
 	g := &generator{
-		nb:  nb,
-		log: l,
+		nb: nb,
 	}
 
 	return g, nil

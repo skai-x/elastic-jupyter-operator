@@ -64,7 +64,7 @@ func (r *JupyterNotebookReconciler) Reconcile(req ctrl.Request) (ctrl.Result, er
 	}
 	instance := original.DeepCopy()
 
-	gr, err := notebook.NewReconciler(r.Client, r.Log, r.Recorder, r.Scheme, instance)
+	gr, err := notebook.NewReconciler(r.Client, r.Recorder, r.Scheme, instance)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
