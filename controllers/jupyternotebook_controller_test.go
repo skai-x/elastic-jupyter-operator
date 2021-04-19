@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
@@ -36,7 +37,7 @@ var _ = Describe("JupyterNotebook controller", func() {
 			},
 		}
 
-		NotebookWithTemplate = &kubeflowtkestackiov1alpha1.JupyterNotebook{
+		notebookWithTemplate = &kubeflowtkestackiov1alpha1.JupyterNotebook{
 			TypeMeta: metav1.TypeMeta{
 				APIVersion: "kubeflow.tkestack.io/v1alpha1",
 				Kind:       "JupyterNotebook",
@@ -58,22 +59,42 @@ var _ = Describe("JupyterNotebook controller", func() {
 		}
 	)
 
-	Context("When updating JupyterNotebook", func() {
-		It("Should generate correct JupyterNotebook image", func() {
-			By("Create new notebook")
-			Expect(k8sClient.Create(context.Background(), NotebookWithTemplate)).Should(Succeed())
+	Context("JupyterNotebook only have template", func() {
+		It("Should create successfully", func() {
+			Expect(k8sClient.Create(context.Background(), notebookWithTemplate)).Should(Succeed())
 
-			By("Expecting obtained image to be same as default image")
+			// Create
+			By("Expecting container name")
 			Eventually(func() string {
 				actual := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
 				if err := k8sClient.Get(context.Background(), key, actual); err == nil {
-					if actual != nil && actual.Spec.Template != nil {
-						println(actual)
-						return actual.Spec.Template.Name
-					}
+					// println("!!!!Name is  ", actual.Spec.Template.Spec.Containers[0].Name)
+					return actual.Spec.Template.Spec.Containers[0].Name
 				}
 				return ""
 			}, timeout, interval).Should(Equal(DefaultContainerName))
-		}, timeout.Hours())
+
+			// Update
+			updated := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
+			Expect(k8sClient.Get(context.Background(), key, updated)).Should(Succeed())
+			updated.Spec.Template.Name = "NewName"
+			Expect(k8sClient.Update(context.Background(), updated)).Should(Succeed())
+
+			By("Expecting template name")
+			Eventually(func() string {
+				actual := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
+				if err := k8sClient.Get(context.Background(), key, actual); err == nil {
+					println("!!!!Name is  ", actual.Spec.Template.Name)
+					return actual.Spec.Template.Name
+				}
+				return ""
+			}, timeout, interval).Should(Equal("NewName"))
+
+			key.Name = "Wrong"
+			actual := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
+			err := k8sClient.Get(context.Background(), key, actual)
+			println("Is Error Not Found ", errors.IsNotFound(err))
+			Expect(err).To(HaveOccurred())
+		})
 	})
 })

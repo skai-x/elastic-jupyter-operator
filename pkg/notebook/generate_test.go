@@ -2,15 +2,13 @@ package notebook
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 	"github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"sigs.k8s.io/controller-runtime/pkg/envtest/printer"
 )
 
 const (
@@ -56,6 +54,9 @@ var (
 		},
 		Spec: v1alpha1.JupyterNotebookSpec{
 			Template: &v1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: map[string]string{"app": "notebook"},
+				},
 				Spec: podSpec,
 			},
 		},
@@ -100,51 +101,74 @@ var (
 )
 
 func TestGenerate(t *testing.T) {
-	RegisterFailHandler(Fail)
-
-	RunSpecsWithDefaultAndCustomReporters(t,
-		"Generate Suite",
-		[]Reporter{printer.NewlineReporter{}})
-
-	By("Get generator")
+	// Test newGenerator
 	var err error
 	var g1, g2, g3, g4 *generator
 	_, err = newGenerator(nil)
-	Expect(err).To(HaveOccurred())
+	if err == nil {
+		t.Errorf("Expect error to have occurred")
+	}
 	g1, err = newGenerator(notebookWithTemplate)
-	Expect(err).NotTo(HaveOccurred())
+	if err != nil {
+		t.Errorf("Expect error not to have occurred")
+	}
 	g2, err = newGenerator(notebookWithGateway)
-	Expect(err).NotTo(HaveOccurred())
+	if err != nil {
+		t.Errorf("Expect error not to have occurred")
+	}
 	g3, err = newGenerator(completeNotebook)
-	Expect(err).NotTo(HaveOccurred())
+	if err != nil {
+		t.Errorf("Expect error not to have occurred")
+	}
 	g4, err = newGenerator(emptyNotebook)
-	Expect(err).NotTo(HaveOccurred())
+	if err != nil {
+		t.Errorf("Expect error not to have occurred")
+	}
 
-	By("Generate deployment with template")
+	// Test DesiredDeploymentWithoutOwner
+	// Generate deployment with template
 	var d1 *appsv1.Deployment
 	d1, err = g1.DesiredDeploymentWithoutOwner()
-	Expect(err).NotTo(HaveOccurred())
-	Expect(d1.Spec.Template.Spec.Containers[0].Name).Should(Equal(DefaultContainerName))
+	if err != nil {
+		t.Errorf("Expect error not to have occurred")
+	}
+	if d1.Spec.Template.Spec.Containers[0].Name != DefaultContainerName {
+		t.Errorf("Actual: %s, Expected: %s", d1.Spec.Template.Spec.Containers[0].Name, DefaultContainerName)
+	}
 
-	By("Generate deployment with gateway")
+	// Generate deployment with gateway
 	var d2 *appsv1.Deployment
 	d2, err = g2.DesiredDeploymentWithoutOwner()
-	Expect(err).NotTo(HaveOccurred())
-	Expect(d2.Spec.Template.Spec.Containers[0].Image).Should(Equal(DefaultImageWithGateway))
+	if err != nil {
+		t.Errorf("Expect error not to have occurred")
+	}
+	if d2.Spec.Template.Spec.Containers[0].Image != DefaultImageWithGateway {
+		t.Errorf("Actual: %s, Expected: %s", d2.Spec.Template.Spec.Containers[0].Image, DefaultImageWithGateway)
+	}
 
-	By("Generate deployment with both template and gateway")
+	// Generate deployment with both template and gateway
 	var d3 *appsv1.Deployment
 	d3, err = g3.DesiredDeploymentWithoutOwner()
-	Expect(err).NotTo(HaveOccurred())
-	Expect(d3.Spec.Template.Spec.Containers[0].Image).Should(Equal(DefaultImage))
+	if err != nil {
+		t.Errorf("Expect error not to have occurred")
+	}
+	if d3.Spec.Template.Spec.Containers[0].Image != DefaultImage {
+		t.Errorf("Actual: %s, Expected: %s", d3.Spec.Template.Spec.Containers[0].Image, DefaultImage)
+	}
 	s := []string{"--gateway-url", fmt.Sprintf("http://%s.%s:%d", GatewayName, GatewayNamespace, 8888)}
-	Expect(d3.Spec.Template.Spec.Containers[0].Args).Should(Equal(s))
+	if !reflect.DeepEqual(d3.Spec.Template.Spec.Containers[0].Args, s) {
+		t.Errorf("Actual: %s, Expected: %s", d3.Spec.Template.Spec.Containers[0].Args, s)
+	}
 
-	By("Generate deployment")
+	// Generate deployment
 	_, err = g4.DesiredDeploymentWithoutOwner()
-	Expect(err).To(HaveOccurred())
+	if err == nil {
+		t.Errorf("Expect error to have occurred")
+	}
 
-	By("Check labels")
+	// Test lables
 	mp := g1.labels()
-	Expect(mp["notebook"]).Should(Equal(JupyterNotebookName))
+	if mp["notebook"] != JupyterNotebookName {
+		t.Errorf("Actual: %s, Expected: %s", mp["notebook"], JupyterNotebookName)
+	}
 }

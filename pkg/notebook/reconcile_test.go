@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package controllers
+package notebook
 
 import (
 	"path/filepath"
@@ -24,12 +24,14 @@ import (
 	. "github.com/onsi/gomega"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 	"sigs.k8s.io/controller-runtime/pkg/envtest/printer"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
 
 	kubeflowtkestackiov1alpha1 "github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
 	// +kubebuilder:scaffold:imports
@@ -40,13 +42,14 @@ import (
 
 var cfg *rest.Config
 var k8sClient client.Client
+var k8sManager manager.Manager
 var testEnv *envtest.Environment
 
 func TestAPIs(t *testing.T) {
 	RegisterFailHandler(Fail)
 
 	RunSpecsWithDefaultAndCustomReporters(t,
-		"Controller Suite",
+		"Noteboook Suite",
 		[]Reporter{printer.NewlineReporter{}})
 }
 
@@ -66,37 +69,42 @@ var _ = BeforeSuite(func(done Done) {
 	err = kubeflowtkestackiov1alpha1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 
-	err = kubeflowtkestackiov1alpha1.AddToScheme(scheme.Scheme)
-	Expect(err).NotTo(HaveOccurred())
-
-	err = kubeflowtkestackiov1alpha1.AddToScheme(scheme.Scheme)
-	Expect(err).NotTo(HaveOccurred())
-
 	// +kubebuilder:scaffold:scheme
-
-	k8sManager, err := ctrl.NewManager(cfg, ctrl.Options{
+	k8sManager, err = ctrl.NewManager(cfg, ctrl.Options{
 		Scheme: scheme.Scheme,
 	})
 	Expect(err).ToNot(HaveOccurred())
+	Expect(k8sManager).ToNot(BeNil())
 
-	err = (&JupyterNotebookReconciler{
-		Client:   k8sManager.GetClient(),
-		Log:      ctrl.Log.WithName("controllers").WithName("JupyterNotebook"),
-		Recorder: k8sManager.GetEventRecorderFor("JupyterNotebook"),
-		Scheme:   k8sManager.GetScheme(),
-	}).SetupWithManager(k8sManager)
+	k8sClient, err = client.New(cfg, client.Options{Scheme: scheme.Scheme})
 	Expect(err).ToNot(HaveOccurred())
-
-	go func() {
-		err = k8sManager.Start(ctrl.SetupSignalHandler())
-		Expect(err).ToNot(HaveOccurred())
-	}()
-
-	k8sClient = k8sManager.GetClient()
 	Expect(k8sClient).ToNot(BeNil())
 
 	close(done)
 }, 60)
+
+var _ = Describe("JupyterNotebook controller", func() {
+	var (
+		log    = ctrl.Log.WithName("controllers").WithName("JupyterNotebook")
+		rec    = record.NewFakeRecorder(1024 * 1024)
+		scheme = scheme.Scheme
+	)
+
+	Context("Nil JupyterNotebook", func() {
+		It("Should fail to create reconciler", func() {
+			_, err := NewReconciler(k8sClient, log, rec, scheme, nil)
+			Expect(err).To(HaveOccurred())
+		})
+	})
+
+	Context("JupyterNotebook only have template", func() {
+		It("Should create reconciler successfully", func() {
+			r, err := NewReconciler(k8sClient, log, rec, scheme, notebookWithTemplate)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(r).ToNot(BeNil())
+		})
+	})
+})
 
 var _ = AfterSuite(func() {
 	By("tearing down the test environment")
