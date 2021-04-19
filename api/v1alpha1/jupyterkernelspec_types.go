@@ -29,6 +29,8 @@ type JupyterKernelSpecSpec struct {
 	Env         []v1.EnvVar `json:"env,omitempty"`
 	Command     []string    `json:"command,omitempty"`
 	// TODO(gaocegege): Support resources and so on.
+
+	Template *v1.PodTemplate `json:"template,omitempty"`
 }
 
 // JupyterKernelSpecStatus defines the observed state of JupyterKernelSpec
