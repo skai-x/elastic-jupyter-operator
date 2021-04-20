@@ -7,7 +7,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
@@ -62,19 +61,17 @@ var _ = Describe("JupyterNotebook controller", func() {
 	Context("JupyterNotebook only have template", func() {
 		It("Should create successfully", func() {
 			Expect(k8sClient.Create(context.Background(), notebookWithTemplate)).Should(Succeed())
-
-			// Create
 			By("Expecting container name")
 			Eventually(func() string {
 				actual := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
 				if err := k8sClient.Get(context.Background(), key, actual); err == nil {
-					// println("!!!!Name is  ", actual.Spec.Template.Spec.Containers[0].Name)
 					return actual.Spec.Template.Spec.Containers[0].Name
 				}
 				return ""
 			}, timeout, interval).Should(Equal(DefaultContainerName))
+		})
 
-			// Update
+		It("Should update successfully", func() {
 			updated := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
 			Expect(k8sClient.Get(context.Background(), key, updated)).Should(Succeed())
 			updated.Spec.Template.Name = "NewName"
@@ -84,17 +81,15 @@ var _ = Describe("JupyterNotebook controller", func() {
 			Eventually(func() string {
 				actual := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
 				if err := k8sClient.Get(context.Background(), key, actual); err == nil {
-					println("!!!!Name is  ", actual.Spec.Template.Name)
 					return actual.Spec.Template.Name
 				}
 				return ""
 			}, timeout, interval).Should(Equal("NewName"))
 
-			key.Name = "Wrong"
-			actual := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
-			err := k8sClient.Get(context.Background(), key, actual)
-			println("Is Error Not Found ", errors.IsNotFound(err))
-			Expect(err).To(HaveOccurred())
+			// key.Name = "Wrong"
+			// actual := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
+			// err := k8sClient.Get(context.Background(), key, actual)
+			// Expect(err).To(HaveOccurred())
 		})
 	})
 })

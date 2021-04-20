@@ -1,27 +1,13 @@
-/*
-Copyright 2021.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
 package notebook
 
 import (
+	"context"
 	"path/filepath"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/record"
@@ -44,6 +30,14 @@ var cfg *rest.Config
 var k8sClient client.Client
 var k8sManager manager.Manager
 var testEnv *envtest.Environment
+
+var s *runtime.Scheme
+var (
+	log = ctrl.Log.WithName("controllers").WithName("JupyterNotebook")
+	rec = record.NewFakeRecorder(1024 * 1024)
+	// rec = k8sManager.GetEventRecorderFor("reconciler")
+	// scheme = scheme.Scheme
+)
 
 func TestAPIs(t *testing.T) {
 	RegisterFailHandler(Fail)
@@ -70,36 +64,64 @@ var _ = BeforeSuite(func(done Done) {
 	Expect(err).NotTo(HaveOccurred())
 
 	// +kubebuilder:scaffold:scheme
-	k8sManager, err = ctrl.NewManager(cfg, ctrl.Options{
+
+	k8sManager, err := ctrl.NewManager(cfg, ctrl.Options{
 		Scheme: scheme.Scheme,
 	})
 	Expect(err).ToNot(HaveOccurred())
-	Expect(k8sManager).ToNot(BeNil())
 
-	k8sClient, err = client.New(cfg, client.Options{Scheme: scheme.Scheme})
-	Expect(err).ToNot(HaveOccurred())
+	go func() {
+		err = k8sManager.Start(ctrl.SetupSignalHandler())
+		Expect(err).ToNot(HaveOccurred())
+	}()
+
+	k8sClient = k8sManager.GetClient()
 	Expect(k8sClient).ToNot(BeNil())
+	s = k8sManager.GetScheme()
+	Expect(s).ToNot(BeNil())
 
 	close(done)
 }, 60)
 
 var _ = Describe("JupyterNotebook controller", func() {
-	var (
-		log    = ctrl.Log.WithName("controllers").WithName("JupyterNotebook")
-		rec    = record.NewFakeRecorder(1024 * 1024)
-		scheme = scheme.Scheme
-	)
 
 	Context("Nil JupyterNotebook", func() {
 		It("Should fail to create reconciler", func() {
-			_, err := NewReconciler(k8sClient, log, rec, scheme, nil)
+			_, err := NewReconciler(k8sClient, log, rec, s, nil)
 			Expect(err).To(HaveOccurred())
 		})
 	})
 
 	Context("JupyterNotebook only have template", func() {
 		It("Should create reconciler successfully", func() {
-			r, err := NewReconciler(k8sClient, log, rec, scheme, notebookWithTemplate)
+			r, err := NewReconciler(k8sClient, log, rec, s, notebookWithTemplate)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(r).ToNot(BeNil())
+		})
+
+		It("Should reconcile deployment as desired", func() {
+			var r *Reconciler
+			var err error
+			r, err = NewReconciler(k8sClient, log, rec, s, notebookWithTemplate)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(r).ToNot(BeNil())
+			println("my client is ", r.cli)
+
+			err = r.cli.Create(context.TODO(), notebookWithTemplate)
+			Expect(err).ToNot(HaveOccurred())
+
+			err = r.reconcileDeployment()
+			Expect(err).ToNot(HaveOccurred())
+			// actual := &appsv1.Deployment{}
+			// err := k8sClient.Get(context.Background(),
+			// 	types.NamespacedName{Name: notebookWithTemplate.GetName(), Namespace: notebookWithTemplate.GetNamespace()}, actual)
+			// Expect(err).ToNot(HaveOccurred())
+		})
+	})
+
+	Context("JupyterNotebook without template and notebook", func() {
+		r, err := NewReconciler(k8sClient, log, rec, s, notebookWithTemplate)
+		It("Should fail to generate deployment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(r).ToNot(BeNil())
 		})

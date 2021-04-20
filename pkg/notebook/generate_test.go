@@ -51,6 +51,7 @@ var (
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      JupyterNotebookName,
 			Namespace: JupyterNotebookNamespace,
+			UID:       "xxxxxxxxx",
 		},
 		Spec: v1alpha1.JupyterNotebookSpec{
 			Template: &v1.PodTemplateSpec{
