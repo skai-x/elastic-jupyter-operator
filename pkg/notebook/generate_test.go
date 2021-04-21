@@ -25,9 +25,8 @@ var (
 	podSpec = v1.PodSpec{
 		Containers: []v1.Container{
 			{
-				Name:            DefaultContainerName,
-				Image:           DefaultImage,
-				ImagePullPolicy: v1.PullIfNotPresent,
+				Name:  DefaultContainerName,
+				Image: DefaultImage,
 			},
 		},
 	}
@@ -51,7 +50,6 @@ var (
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      JupyterNotebookName,
 			Namespace: JupyterNotebookNamespace,
-			UID:       "xxxxxxxxx",
 		},
 		Spec: v1alpha1.JupyterNotebookSpec{
 			Template: &v1.PodTemplateSpec{

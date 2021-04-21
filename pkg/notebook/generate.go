@@ -22,6 +22,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 
 	"github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
 )
@@ -64,6 +65,7 @@ func (g generator) DesiredDeploymentWithoutOwner() (*appsv1.Deployment, error) {
 	selector := &metav1.LabelSelector{
 		MatchLabels: labels,
 	}
+	terminationGracePeriodSeconds := int64(30)
 
 	if g.nb.Spec.Template != nil {
 		if g.nb.Spec.Template.Labels != nil {
@@ -71,14 +73,16 @@ func (g generator) DesiredDeploymentWithoutOwner() (*appsv1.Deployment, error) {
 				podLabels[k] = v
 			}
 		}
-		podSpec = g.nb.Spec.Template.Spec
+		podSpec = completePodSpec(&g.nb.Spec.Template.Spec)
 	} else {
 		podSpec = v1.PodSpec{
 			Containers: []v1.Container{
 				{
-					Name:            defaultContainerName,
-					Image:           defaultImage,
-					ImagePullPolicy: v1.PullIfNotPresent,
+					Name:                     defaultContainerName,
+					Image:                    defaultImage,
+					ImagePullPolicy:          v1.PullIfNotPresent,
+					TerminationMessagePath:   v1.TerminationMessagePathDefault,
+					TerminationMessagePolicy: v1.TerminationMessageReadFile,
 					Args: []string{
 						"start-notebook.sh",
 					},
@@ -91,8 +95,18 @@ func (g generator) DesiredDeploymentWithoutOwner() (*appsv1.Deployment, error) {
 					},
 				},
 			},
+			RestartPolicy:                 v1.RestartPolicyAlways,
+			TerminationGracePeriodSeconds: &terminationGracePeriodSeconds,
+			DNSPolicy:                     v1.DNSClusterFirst,
+			SecurityContext:               &v1.PodSecurityContext{},
+			SchedulerName:                 v1.DefaultSchedulerName,
 		}
 	}
+
+	replicas := int32(1)
+	revisionHistoryLimit := int32(10)
+	progressDeadlineSeconds := int32(600)
+	maxUnavailable := intstr.FromInt(25)
 
 	d := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -101,6 +115,7 @@ func (g generator) DesiredDeploymentWithoutOwner() (*appsv1.Deployment, error) {
 			Labels:    labels,
 		},
 		Spec: appsv1.DeploymentSpec{
+			Replicas: &replicas,
 			Selector: selector,
 			Template: v1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
@@ -108,6 +123,15 @@ func (g generator) DesiredDeploymentWithoutOwner() (*appsv1.Deployment, error) {
 				},
 				Spec: podSpec,
 			},
+			Strategy: appsv1.DeploymentStrategy{
+				Type: appsv1.DeploymentStrategyType(appsv1.RollingUpdateDaemonSetStrategyType),
+				RollingUpdate: &appsv1.RollingUpdateDeployment{
+					MaxUnavailable: &maxUnavailable,
+					MaxSurge:       &maxUnavailable,
+				},
+			},
+			RevisionHistoryLimit:    &revisionHistoryLimit,
+			ProgressDeadlineSeconds: &progressDeadlineSeconds,
 		},
 	}
 
@@ -126,4 +150,42 @@ func (g generator) labels() map[string]string {
 		LabelNS:       g.nb.Namespace,
 		LabelNotebook: g.nb.Name,
 	}
+}
+
+func completePodSpec(old *v1.PodSpec) v1.PodSpec {
+	new := old.DeepCopy()
+	for i := range new.Containers {
+		if new.Containers[i].TerminationMessagePath == "" {
+			new.Containers[i].TerminationMessagePath = v1.TerminationMessagePathDefault
+		}
+		if new.Containers[i].TerminationMessagePolicy == v1.TerminationMessagePolicy("") {
+			new.Containers[i].TerminationMessagePolicy = v1.TerminationMessageReadFile
+		}
+		if new.Containers[i].ImagePullPolicy == v1.PullPolicy("") {
+			new.Containers[i].ImagePullPolicy = v1.PullIfNotPresent
+		}
+	}
+
+	if new.RestartPolicy == v1.RestartPolicy("") {
+		new.RestartPolicy = v1.RestartPolicyAlways
+	}
+
+	if new.TerminationGracePeriodSeconds == nil {
+		d := int64(v1.DefaultTerminationGracePeriodSeconds)
+		new.TerminationGracePeriodSeconds = &d
+	}
+
+	if new.DNSPolicy == v1.DNSPolicy("") {
+		new.DNSPolicy = v1.DNSClusterFirst
+	}
+
+	if new.SecurityContext == nil {
+		new.SecurityContext = &v1.PodSecurityContext{}
+	}
+
+	if new.SchedulerName == "" {
+		new.SchedulerName = v1.DefaultSchedulerName
+	}
+
+	return *new
 }

@@ -87,8 +87,6 @@ func (r Reconciler) reconcileDeployment() error {
 	// Create deployment if not found
 	if err != nil && errors.IsNotFound(err) {
 		r.log.Info("Creating deployment", "namespace", desired.Namespace, "name", desired.Name)
-		r.log.Info("Deployment is", "Deployment", desired)
-
 		if err := r.cli.Create(context.TODO(), desired); err != nil {
 			r.log.Error(err, "Failed to create the deployment",
 				"deployment", desired.Name)
@@ -101,9 +99,7 @@ func (r Reconciler) reconcileDeployment() error {
 	}
 
 	// Update deployment from desired to actural
-	if !equality.Semantic.DeepEqual(desired.Spec.Template, actual.Spec.Template) {
-		r.log.Info("deployment diff is", "desired", desired.Spec.Template, "actual", actual.Spec.Template)
-		// actual.Spec.Template = desired.Spec.Template
+	if !equality.Semantic.DeepEqual(desired.Spec, actual.Spec) {
 		if err := r.cli.Update(context.TODO(), desired); err != nil {
 			r.log.Error(err, "Failed to update deployment")
 			return err

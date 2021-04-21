@@ -72,10 +72,10 @@ var _ = Describe("JupyterNotebook controller", func() {
 		})
 
 		It("Should update successfully", func() {
-			updated := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
-			Expect(k8sClient.Get(context.Background(), key, updated)).Should(Succeed())
-			updated.Spec.Template.Name = "NewName"
-			Expect(k8sClient.Update(context.Background(), updated)).Should(Succeed())
+			actual := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
+			Expect(k8sClient.Get(context.Background(), key, actual)).Should(Succeed())
+			actual.Spec.Template.Name = "NewName"
+			Expect(k8sClient.Update(context.Background(), actual)).Should(Succeed())
 
 			By("Expecting template name")
 			Eventually(func() string {
@@ -85,11 +85,21 @@ var _ = Describe("JupyterNotebook controller", func() {
 				}
 				return ""
 			}, timeout, interval).Should(Equal("NewName"))
+		})
 
-			// key.Name = "Wrong"
-			// actual := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
-			// err := k8sClient.Get(context.Background(), key, actual)
-			// Expect(err).To(HaveOccurred())
+		It("Should delete successfully", func() {
+			By("Expecting to delete successfully")
+			Eventually(func() error {
+				actual := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
+				k8sClient.Get(context.Background(), key, actual)
+				return k8sClient.Delete(context.Background(), actual)
+			}, timeout, interval).Should(Succeed())
+
+			By("Expecting to delete finish")
+			Eventually(func() error {
+				actual := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
+				return k8sClient.Get(context.Background(), key, actual)
+			}, timeout, interval).ShouldNot(Succeed())
 		})
 	})
 })
