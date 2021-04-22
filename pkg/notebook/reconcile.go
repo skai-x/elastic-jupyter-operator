@@ -42,10 +42,11 @@ type Reconciler struct {
 	gen      *generator
 }
 
-func NewReconciler(cli client.Client, l logr.Logger,
+func NewReconciler(cli client.Client,
+	l logr.Logger,
 	r record.EventRecorder, s *runtime.Scheme,
 	i *v1alpha1.JupyterNotebook) (*Reconciler, error) {
-	g, err := newGenerator(i, l)
+	g, err := newGenerator(i)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +87,6 @@ func (r Reconciler) reconcileDeployment() error {
 	// Create deployment if not found
 	if err != nil && errors.IsNotFound(err) {
 		r.log.Info("Creating deployment", "namespace", desired.Namespace, "name", desired.Name)
-
 		if err := r.cli.Create(context.TODO(), desired); err != nil {
 			r.log.Error(err, "Failed to create the deployment",
 				"deployment", desired.Name)
@@ -99,9 +99,8 @@ func (r Reconciler) reconcileDeployment() error {
 	}
 
 	// Update deployment from desired to actural
-	if !equality.Semantic.DeepEqual(desired.Spec.Template, actual.Spec.Template) {
-		actual.Spec.Template = desired.Spec.Template
-		if err := r.cli.Update(context.TODO(), actual); err != nil {
+	if !equality.Semantic.DeepEqual(desired.Spec, actual.Spec) {
+		if err := r.cli.Update(context.TODO(), desired); err != nil {
 			r.log.Error(err, "Failed to update deployment")
 			return err
 		} else {
