@@ -27,14 +27,13 @@ import (
 
 // These tests use Ginkgo (BDD-style Go testing framework). Refer to
 // http://onsi.github.io/ginkgo/ to learn more about Ginkgo.
-
-var cfg *rest.Config
-var k8sClient client.Client
-var k8sManager manager.Manager
-var testEnv *envtest.Environment
-
-var s *runtime.Scheme
 var (
+	cfg        *rest.Config
+	k8sClient  client.Client
+	k8sManager manager.Manager
+	testEnv    *envtest.Environment
+	s          *runtime.Scheme
+
 	log = ctrl.Log.WithName("controllers").WithName("JupyterNotebook")
 	rec = record.NewFakeRecorder(1024 * 1024)
 )
@@ -106,8 +105,6 @@ var _ = Describe("JupyterNotebook controller", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(r).ToNot(BeNil())
 			err = r.reconcileDeployment()
-			Expect(err).To(HaveOccurred())
-			err = r.Reconcile()
 			Expect(err).To(HaveOccurred())
 		})
 	})

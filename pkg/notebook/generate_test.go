@@ -1,12 +1,12 @@
 package notebook
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"testing"
 
 	"github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
-	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -32,10 +32,6 @@ var (
 	}
 
 	emptyNotebook = &v1alpha1.JupyterNotebook{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "kubeflow.tkestack.io/v1alpha1",
-			Kind:       "JupyterNotebook",
-		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      JupyterNotebookName,
 			Namespace: JupyterNotebookNamespace,
@@ -43,10 +39,6 @@ var (
 	}
 
 	notebookWithTemplate = &v1alpha1.JupyterNotebook{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "kubeflow.tkestack.io/v1alpha1",
-			Kind:       "JupyterNotebook",
-		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      JupyterNotebookName,
 			Namespace: JupyterNotebookNamespace,
@@ -62,26 +54,20 @@ var (
 	}
 
 	notebookWithGateway = &v1alpha1.JupyterNotebook{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "kubeflow.tkestack.io/v1alpha1",
-			Kind:       "JupyterNotebook",
-		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      JupyterNotebookName,
 			Namespace: JupyterNotebookNamespace,
 		},
 		Spec: v1alpha1.JupyterNotebookSpec{
 			Gateway: &v1.ObjectReference{
-				Kind: "JupyterGateway",
+				Kind:      "JupyterGateway",
+				Namespace: GatewayNamespace,
+				Name:      GatewayName,
 			},
 		},
 	}
 
 	completeNotebook = &v1alpha1.JupyterNotebook{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "kubeflow.tkestack.io/v1alpha1",
-			Kind:       "JupyterNotebook",
-		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      JupyterNotebookName,
 			Namespace: JupyterNotebookNamespace,
@@ -100,74 +86,76 @@ var (
 )
 
 func TestGenerate(t *testing.T) {
-	// Test newGenerator
-	var err error
-	var g1, g2, g3, g4 *generator
-	_, err = newGenerator(nil)
-	if err == nil {
-		t.Errorf("Expect error to have occurred")
-	}
-	g1, err = newGenerator(notebookWithTemplate)
-	if err != nil {
-		t.Errorf("Expect error not to have occurred")
-	}
-	g2, err = newGenerator(notebookWithGateway)
-	if err != nil {
-		t.Errorf("Expect error not to have occurred")
-	}
-	g3, err = newGenerator(completeNotebook)
-	if err != nil {
-		t.Errorf("Expect error not to have occurred")
-	}
-	g4, err = newGenerator(emptyNotebook)
-	if err != nil {
-		t.Errorf("Expect error not to have occurred")
+	type test struct {
+		input       *v1alpha1.JupyterNotebook
+		expectedErr error
+		expectedGen *generator
 	}
 
-	// Test DesiredDeploymentWithoutOwner
-	// Generate deployment with template
-	var d1 *appsv1.Deployment
-	d1, err = g1.DesiredDeploymentWithoutOwner()
-	if err != nil {
-		t.Errorf("Expect error not to have occurred")
-	}
-	if d1.Spec.Template.Spec.Containers[0].Name != DefaultContainerName {
-		t.Errorf("Actual: %s, Expected: %s", d1.Spec.Template.Spec.Containers[0].Name, DefaultContainerName)
+	tests := []test{
+		{input: nil, expectedErr: errors.New("Got nil when initializing Generator"), expectedGen: nil},
+		{input: notebookWithTemplate, expectedErr: nil, expectedGen: &generator{nb: notebookWithTemplate}},
+		{input: notebookWithGateway, expectedErr: nil, expectedGen: &generator{nb: notebookWithGateway}},
+		{input: completeNotebook, expectedErr: nil, expectedGen: &generator{nb: completeNotebook}},
+		{input: emptyNotebook, expectedErr: nil, expectedGen: &generator{nb: emptyNotebook}},
 	}
 
-	// Generate deployment with gateway
-	var d2 *appsv1.Deployment
-	d2, err = g2.DesiredDeploymentWithoutOwner()
-	if err != nil {
-		t.Errorf("Expect error not to have occurred")
+	for _, tc := range tests {
+		gen, err := newGenerator(tc.input)
+		if !reflect.DeepEqual(tc.expectedErr, err) {
+			t.Errorf("expected: %v, got: %v", tc.expectedErr, err)
+		}
+		if err == nil && !reflect.DeepEqual(tc.expectedGen, gen) {
+			t.Errorf("expected: %v, got: %v", tc.expectedGen, gen)
+		}
 	}
-	if d2.Spec.Template.Spec.Containers[0].Image != DefaultImageWithGateway {
-		t.Errorf("Actual: %s, Expected: %s", d2.Spec.Template.Spec.Containers[0].Image, DefaultImageWithGateway)
+}
+
+func TestDesiredDeploymentWithoutOwner(t *testing.T) {
+	type test struct {
+		gen           *generator
+		expectedErr   error
+		expectedImage string
+		expectedArgs  []string
 	}
 
-	// Generate deployment with both template and gateway
-	var d3 *appsv1.Deployment
-	d3, err = g3.DesiredDeploymentWithoutOwner()
-	if err != nil {
-		t.Errorf("Expect error not to have occurred")
-	}
-	if d3.Spec.Template.Spec.Containers[0].Image != DefaultImage {
-		t.Errorf("Actual: %s, Expected: %s", d3.Spec.Template.Spec.Containers[0].Image, DefaultImage)
-	}
-	s := []string{"--gateway-url", fmt.Sprintf("http://%s.%s:%d", GatewayName, GatewayNamespace, 8888)}
-	if !reflect.DeepEqual(d3.Spec.Template.Spec.Containers[0].Args, s) {
-		t.Errorf("Actual: %s, Expected: %s", d3.Spec.Template.Spec.Containers[0].Args, s)
+	tests := []test{
+		{gen: &generator{nb: notebookWithTemplate}, expectedErr: nil, expectedImage: DefaultImage, expectedArgs: nil},
+		{gen: &generator{nb: notebookWithGateway}, expectedErr: nil, expectedImage: DefaultImageWithGateway,
+			expectedArgs: []string{"start-notebook.sh", "--gateway-url", fmt.Sprintf("http://%s.%s:%d", GatewayName, GatewayNamespace, 8888)}},
+		{gen: &generator{nb: completeNotebook}, expectedErr: nil, expectedImage: DefaultImage,
+			expectedArgs: []string{"--gateway-url", fmt.Sprintf("http://%s.%s:%d", GatewayName, GatewayNamespace, 8888)}},
+		{gen: &generator{nb: emptyNotebook}, expectedErr: errors.New("no gateway and template applied")},
 	}
 
-	// Generate deployment
-	_, err = g4.DesiredDeploymentWithoutOwner()
-	if err == nil {
-		t.Errorf("Expect error to have occurred")
+	for i, tc := range tests {
+		d, err := tc.gen.DesiredDeploymentWithoutOwner()
+		if !reflect.DeepEqual(tc.expectedErr, err) {
+			t.Errorf("expected: %v, got: %v", tc.expectedErr, err)
+		}
+		if err == nil && !reflect.DeepEqual(tc.expectedImage, d.Spec.Template.Spec.Containers[0].Image) {
+			t.Errorf("expected: %v, got: %v", tc.expectedImage, d.Spec.Template.Spec.Containers[0].Image)
+		}
+		if err == nil && !reflect.DeepEqual(tc.expectedArgs, d.Spec.Template.Spec.Containers[0].Args) {
+			t.Errorf("i= %d expected: %v, got: %v", i, tc.expectedArgs, d.Spec.Template.Spec.Containers[0].Args)
+		}
+	}
+}
+
+func TestLable(t *testing.T) {
+	type test struct {
+		gen      *generator
+		expected string
 	}
 
-	// Test lables
-	mp := g1.labels()
-	if mp["notebook"] != JupyterNotebookName {
-		t.Errorf("Actual: %s, Expected: %s", mp["notebook"], JupyterNotebookName)
+	tests := []test{
+		{gen: &generator{nb: notebookWithTemplate}, expected: JupyterNotebookName},
+	}
+
+	for _, tc := range tests {
+		mp := tc.gen.labels()
+		if !reflect.DeepEqual(tc.expected, mp["notebook"]) {
+			t.Errorf("expected: %v, got: %v", tc.expected, mp["notebook"])
+		}
 	}
 }
