@@ -25,3 +25,4 @@ bin
 
 vendor/
 /enterprise_gateway/
+.vscode/
