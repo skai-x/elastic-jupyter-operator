@@ -21,18 +21,13 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// JupyterKernelSpecSpec defines the desired state of JupyterKernelSpec
-type JupyterKernelSpecSpec struct {
-	Language    string      `json:"language,omitempty"`
-	DisplayName string      `json:"displayName,omitempty"`
-	Image       string      `json:"image,omitempty"`
-	Env         []v1.EnvVar `json:"env,omitempty"`
-	Command     []string    `json:"command,omitempty"`
-	// TODO(gaocegege): Support resources and so on.
+// JupyterKernelTemplateSpec defines the desired state of JupyterKernelTemplate
+type JupyterKernelTemplateSpec struct {
+	Template *v1.PodTemplate `json:"template,omitempty"`
 }
 
-// JupyterKernelSpecStatus defines the observed state of JupyterKernelSpec
-type JupyterKernelSpecStatus struct {
+// JupyterKernelTemplateStatus defines the observed state of JupyterKernelTemplate
+type JupyterKernelTemplateStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 }
@@ -40,24 +35,24 @@ type JupyterKernelSpecStatus struct {
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 
-// JupyterKernelSpec is the Schema for the jupyterkernelspecs API
-type JupyterKernelSpec struct {
+// JupyterKernelTemplate is the Schema for the jupyterkerneltemplates API
+type JupyterKernelTemplate struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   JupyterKernelSpecSpec   `json:"spec,omitempty"`
-	Status JupyterKernelSpecStatus `json:"status,omitempty"`
+	Spec   JupyterKernelTemplateSpec   `json:"spec,omitempty"`
+	Status JupyterKernelTemplateStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// JupyterKernelSpecList contains a list of JupyterKernelSpec
-type JupyterKernelSpecList struct {
+// JupyterKernelTemplateList contains a list of JupyterKernelTemplate
+type JupyterKernelTemplateList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []JupyterKernelSpec `json:"items"`
+	Items           []JupyterKernelTemplate `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&JupyterKernelSpec{}, &JupyterKernelSpecList{})
+	SchemeBuilder.Register(&JupyterKernelTemplate{}, &JupyterKernelTemplateList{})
 }
