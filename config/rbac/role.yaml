@@ -81,6 +81,26 @@ rules:
 - apiGroups:
   - kubeflow.tkestack.io
   resources:
+  - jupyterkerneltemplates
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - kubeflow.tkestack.io
+  resources:
+  - jupyterkerneltemplates/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - kubeflow.tkestack.io
+  resources:
   - jupyternotebooks
   verbs:
   - create

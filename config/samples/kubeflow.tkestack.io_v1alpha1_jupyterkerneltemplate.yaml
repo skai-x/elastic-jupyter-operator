@@ -1,0 +1,15 @@
+apiVersion: kubeflow.tkestack.io/v1alpha1
+kind: JupyterKernelTemplate
+metadata:
+  name: jupyterkerneltemplate-sample
+spec:
+  template:
+    metadata: 
+      app: enterprise-gateway
+      component: kernel
+    template:
+      spec:
+        restartPolicy: Never
+        containers:
+          - name: kernel
+

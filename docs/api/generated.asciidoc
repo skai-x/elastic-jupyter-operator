@@ -18,6 +18,8 @@ Package v1alpha1 contains API Schema definitions for the kubeflow.tkestack.io v1
 - xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupytergatewaylist[$$JupyterGatewayList$$]
 - xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelspec[$$JupyterKernelSpec$$]
 - xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelspeclist[$$JupyterKernelSpecList$$]
+- xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkerneltemplate[$$JupyterKernelTemplate$$]
+- xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkerneltemplatelist[$$JupyterKernelTemplateList$$]
 - xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyternotebook[$$JupyterNotebook$$]
 - xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyternotebooklist[$$JupyterNotebookList$$]
 
@@ -84,6 +86,7 @@ JupyterGatewaySpec defines the desired state of JupyterGateway
 | *`cullIdleTimeout`* __integer__ | Timeout (in seconds) after which a kernel is considered idle and ready to be culled. Values of 0 or lower disable culling. Very short timeouts may result in kernels being culled for users with poor network connections. Ref https://jupyter-notebook.readthedocs.io/en/stable/config.html
 | *`cullInterval`* __integer__ | The interval (in seconds) on which to check for idle kernels exceeding the cull timeout value.
 | *`resources`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#resourcerequirements-v1-core[$$ResourceRequirements$$]__ | Compute Resources required by this container. Cannot be updated. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+| *`image`* __string__ | 
 | *`clusterRole`* __string__ | 
 |===
 
@@ -165,6 +168,69 @@ JupyterKernelSpecSpec defines the desired state of JupyterKernelSpec
 | *`image`* __string__ | 
 | *`env`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#envvar-v1-core[$$EnvVar$$] array__ | 
 | *`command`* __string array__ | 
+| *`className`* __string__ | 
+| *`template`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#objectreference-v1-core[$$ObjectReference$$]__ | 
+|===
+
+
+
+
+[id="{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkerneltemplate"]
+==== JupyterKernelTemplate 
+
+JupyterKernelTemplate is the Schema for the jupyterkerneltemplates API
+
+.Appears In:
+****
+- xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkerneltemplatelist[$$JupyterKernelTemplateList$$]
+****
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`apiVersion`* __string__ | `kubeflow.tkestack.io/v1alpha1`
+| *`kind`* __string__ | `JupyterKernelTemplate`
+| *`TypeMeta`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#typemeta-v1-meta[$$TypeMeta$$]__ | 
+| *`metadata`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#objectmeta-v1-meta[$$ObjectMeta$$]__ | Refer to Kubernetes API documentation for fields of `metadata`.
+
+| *`spec`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkerneltemplatespec[$$JupyterKernelTemplateSpec$$]__ | 
+| *`status`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkerneltemplatestatus[$$JupyterKernelTemplateStatus$$]__ | 
+|===
+
+
+[id="{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkerneltemplatelist"]
+==== JupyterKernelTemplateList 
+
+JupyterKernelTemplateList contains a list of JupyterKernelTemplate
+
+
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`apiVersion`* __string__ | `kubeflow.tkestack.io/v1alpha1`
+| *`kind`* __string__ | `JupyterKernelTemplateList`
+| *`TypeMeta`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#typemeta-v1-meta[$$TypeMeta$$]__ | 
+| *`metadata`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#listmeta-v1-meta[$$ListMeta$$]__ | Refer to Kubernetes API documentation for fields of `metadata`.
+
+| *`items`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkerneltemplate[$$JupyterKernelTemplate$$]__ | 
+|===
+
+
+[id="{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkerneltemplatespec"]
+==== JupyterKernelTemplateSpec 
+
+JupyterKernelTemplateSpec defines the desired state of JupyterKernelTemplate
+
+.Appears In:
+****
+- xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkerneltemplate[$$JupyterKernelTemplate$$]
+****
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`template`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#podtemplate-v1-core[$$PodTemplate$$]__ | 
 |===
 
 
