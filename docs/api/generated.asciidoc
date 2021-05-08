@@ -86,6 +86,7 @@ JupyterGatewaySpec defines the desired state of JupyterGateway
 | *`cullIdleTimeout`* __integer__ | Timeout (in seconds) after which a kernel is considered idle and ready to be culled. Values of 0 or lower disable culling. Very short timeouts may result in kernels being culled for users with poor network connections. Ref https://jupyter-notebook.readthedocs.io/en/stable/config.html
 | *`cullInterval`* __integer__ | The interval (in seconds) on which to check for idle kernels exceeding the cull timeout value.
 | *`resources`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#resourcerequirements-v1-core[$$ResourceRequirements$$]__ | Compute Resources required by this container. Cannot be updated. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+| *`image`* __string__ | 
 | *`clusterRole`* __string__ | 
 |===
 
