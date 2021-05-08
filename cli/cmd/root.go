@@ -30,6 +30,22 @@ import (
 	"github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
 )
 
+const (
+	envKernelPodName   = "KERNEL_POD_NAME"
+	envKernelImage     = "KERNEL_IMAGE"
+	envKernelNamespace = "KERNEL_NAMESPACE"
+	envKernelID        = "KERNEL_ID"
+	envPortRange       = "EG_PORT_RANGE"
+	envResponseAddress = "EG_RESPONSE_ADDRESS"
+	envPublicKey       = "EG_PUBLIC_KEY"
+	envKernelLanguage  = "KERNEL_LANGUAGE"
+	envKernelName      = "KERNEL_NAME"
+	envKernelSpark     = "KERNEL_SPARK_CONTEXT_INIT_MODE"
+	envKernelUsername  = "KERNEL_USERNAME"
+
+	labelKernelID = "kernel_id"
+)
+
 var kernelID, portRange, responseAddr,
 	publicKey, sparkContextInitMode,
 	kernelTemplateName, kernelTemplateNamespace string
@@ -71,7 +87,7 @@ var rootCmd = &cobra.Command{
 		tpl := kt.Spec.Template
 
 		// Set image from the kernel spec.
-		image := os.Getenv("KERNEL_IMAGE")
+		image := os.Getenv(envKernelImage)
 		if image != "" && len(tpl.Template.Spec.Containers) != 0 {
 			tpl.Template.Spec.Containers[0].Image = image
 		}
@@ -81,12 +97,51 @@ var rootCmd = &cobra.Command{
 			Spec:       tpl.Template.Spec,
 		}
 
-		pod.Name = os.Getenv("KERNEL_POD_NAME")
-		pod.Namespace = os.Getenv("KERNEL_POD_NAMESPACE")
+		pod.Name = os.Getenv(envKernelPodName)
+		pod.Namespace = os.Getenv(envKernelNamespace)
 		if pod.Labels == nil {
 			pod.Labels = make(map[string]string)
 		}
-		pod.Labels["kernel_id"] = os.Getenv("KERNEL_ID")
+		pod.Labels[labelKernelID] = kernelID
+
+		pod.Spec.Containers[0].Env = append(pod.Spec.Containers[0].Env,
+			v1.EnvVar{
+				Name:  envPortRange,
+				Value: portRange,
+			},
+			v1.EnvVar{
+				Name:  envResponseAddress,
+				Value: responseAddr,
+			},
+			v1.EnvVar{
+				Name:  envPublicKey,
+				Value: publicKey,
+			},
+			v1.EnvVar{
+				Name:  envKernelID,
+				Value: kernelID,
+			},
+			v1.EnvVar{
+				Name:  envKernelLanguage,
+				Value: os.Getenv(envKernelLanguage),
+			},
+			v1.EnvVar{
+				Name:  envKernelName,
+				Value: os.Getenv(envKernelName),
+			},
+			v1.EnvVar{
+				Name:  envKernelNamespace,
+				Value: os.Getenv(envKernelNamespace),
+			},
+			v1.EnvVar{
+				Name:  envKernelSpark,
+				Value: sparkContextInitMode,
+			},
+			v1.EnvVar{
+				Name:  envKernelUsername,
+				Value: os.Getenv(envKernelUsername),
+			},
+		)
 
 		if err := cli.Create(context.TODO(), pod); err != nil {
 			panic(err)
