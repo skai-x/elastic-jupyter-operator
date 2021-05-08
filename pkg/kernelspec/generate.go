@@ -104,6 +104,11 @@ func (g generator) desiredJSON() (string, error) {
 		},
 		Argv: g.kernelSpec.Spec.Command,
 	}
+
+	// Set the class name to desired.
+	if g.kernelSpec.Spec.ClassName != "" {
+		c.Metadata.ProcessProxy.ClassName = g.kernelSpec.Spec.ClassName
+	}
 	v, err := json.Marshal(c)
 	return string(v), err
 }

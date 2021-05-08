@@ -28,6 +28,7 @@ type JupyterKernelSpecSpec struct {
 	Image       string      `json:"image,omitempty"`
 	Env         []v1.EnvVar `json:"env,omitempty"`
 	Command     []string    `json:"command,omitempty"`
+	ClassName   string      `json:"className,omitempty"`
 	// TODO(gaocegege): Support resources and so on.
 }
 
