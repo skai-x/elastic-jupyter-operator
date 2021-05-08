@@ -73,6 +73,7 @@ The design proposal involves four main changes to elastic jupyter operator and e
 
 - Kernel CRD (new): It is used to manage kernels on Kubernetes
 - KernelSpec CRD (new): It is used to configure the kernel specs in runtime
+- KernelTemplate CRD (new): It is used to configure kernel in runtime
 - JupyterGateway CRD: Changes is made to support updating kernels on the fly
 - Kubeflow Kernel Launcher (new): It is used to launch Kernel CRD inside the gateway
 - Kubeflow Process Proxy (new): It is used to manage kernels in enterprise gateway
@@ -88,6 +89,27 @@ spec:
   environments:
     respondAddress: "{{ eg_response_address }}"
     language: "{{ kernel_language }}"
+```
+
+### KernelTemplate CRD
+
+KernelTemplate CRD is used to replace [etc/kernel-launchers/kubernetes/scripts/kernel-pod.yaml.j2](https://github.com/jupyter/enterprise_gateway/blob/master/etc/kernel-launchers/kubernetes/scripts/kernel-pod.yaml.j2). Its definition looks like:
+
+```yaml
+apiVersion: kubeflow.tkestack.io/v1alpha1
+kind: JupyterKernelTemplate
+metadata:
+  name: jupyterkerneltemplate-sample
+spec:
+  template:
+    metadata: 
+      app: enterprise-gateway
+      component: kernel
+    template:
+      spec:
+        restartPolicy: Never
+        containers:
+          - name: kernel
 ```
 
 ### KernelSpec CRD
@@ -145,6 +167,36 @@ spec:
 
 When a JupyterKernelSpec CR is created, we will create the corresponding configmap. And the configmap will be used as a mount volume in the gateway.
 
+Besides this, The KernelSpec CRD maintains a object reference to one KernelTemplate CRD. It is used to generate commands.
+
+```diff
+{
+    "language": "Python",
+    "display_name": "Python on Kubernetes as a JupyterKernelSpec",
+    "metadata": {
+        "process_proxy": {
+            "class_name": "enterprise_gateway.services.processproxies.k8s.KubernetesProcessProxy"
+        },
+        "config": {
+            "image_name": "ccr.ccs.tencentyun.com/kubeflow-oteam/jupyter-kernel-py:2.5.0"
+        }
+    },
+    "argv": [
+        "kubeflow-launcher",
+        "--RemoteProcessProxy.kernel-id",
+        "{kernel_id}",
+        "--RemoteProcessProxy.port-range",
+        "{port_range}",
+        "--RemoteProcessProxy.response-address",
+        "{response_address}",
++        "--kernel-template-name",
++        "jupyterkerneltemplate-sample",
++        "--kernel-template-namespace",
++        "default"
+    ]
+}
+```
+
 ### JupyterGateway CRD
 
 The specification generation logic needs to be changed to support the new JupyterKernelSpec CRD.
@@ -162,7 +214,9 @@ When `kernels` are defined in the spec, we should get the jupyter kernelspec CRs
 
 ### Kernel Launcher
 
-### KubeflowProcessProxy
+The [kernel launcher](https://github.com/tkestack/elastic-jupyter-operator/tree/master/cli) is introduced to replace [etc/kernel-launchers/kubernetes/scripts/launch_kubernetes.py](https://github.com/jupyter/enterprise_gateway/blob/master/etc/kernel-launchers/kubernetes/scripts/launch_kubernetes.py).
+
+The launcher gets the corresponding KernelTemplate CRD and creates the kernel in the cluster.
 
 ## Reference
 
