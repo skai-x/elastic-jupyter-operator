@@ -6,6 +6,9 @@ spec:
   language: Python
   displayName: "Python on Kubernetes as a JupyterKernelSpec"
   image: ccr.ccs.tencentyun.com/kubeflow-oteam/jupyter-kernel-py:2.5.0
+  template:
+    namespace: default
+    name: jupyterkerneltemplate-sample
   command: 
   # Use the default scripts to launch the kernel.
   - "kubeflow-launcher"

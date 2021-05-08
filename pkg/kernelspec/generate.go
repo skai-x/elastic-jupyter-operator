@@ -47,6 +47,9 @@ const (
 
 	fileName         = "kernel.json"
 	defaultClassName = "enterprise_gateway.services.processproxies.k8s.KubernetesProcessProxy"
+
+	keyKernelTemplateName      = "--kernel-template-name"
+	keyKernelTemplateNamespace = "--kernel-template-namespace"
 )
 
 // generator defines the generator which is used to generate
@@ -109,6 +112,10 @@ func (g generator) desiredJSON() (string, error) {
 	if g.kernelSpec.Spec.ClassName != "" {
 		c.Metadata.ProcessProxy.ClassName = g.kernelSpec.Spec.ClassName
 	}
+	// Set the namespace and name for the jupyter kernel spec.
+	c.Argv = append(c.Argv,
+		keyKernelTemplateName, g.kernelSpec.Spec.Template.Name,
+		keyKernelTemplateNamespace, g.kernelSpec.Spec.Template.Namespace)
 	v, err := json.Marshal(c)
 	return string(v), err
 }

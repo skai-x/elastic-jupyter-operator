@@ -46,6 +46,8 @@ type JupyterGatewaySpec struct {
 	// +optional
 	Resources *v1.ResourceRequirements `json:"resources,omitempty"`
 
+	Image string `json:"image,omitempty"`
+
 	ClusterRole *string `json:"clusterRole,omitempty"`
 }
 
