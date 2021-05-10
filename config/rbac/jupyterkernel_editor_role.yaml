@@ -1,0 +1,24 @@
+# permissions for end users to edit jupyterkernels.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: jupyterkernel-editor-role
+rules:
+- apiGroups:
+  - kubeflow.tkestack.io
+  resources:
+  - jupyterkernels
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - kubeflow.tkestack.io
+  resources:
+  - jupyterkernels/status
+  verbs:
+  - get
