@@ -43,8 +43,19 @@ func (g generator) DesiredDeployment() (*v1.Deployment, error) {
 			Labels:    labels,
 		},
 		Spec: v1.DeploymentSpec{
-			Template: g.k.Spec.Template.Template,
+			Template: *g.k.Spec.Template,
+			Selector: &metav1.LabelSelector{
+				MatchLabels: labels,
+			},
 		},
+	}
+
+	if d.Spec.Template.Labels == nil {
+		d.Spec.Template.Labels = make(map[string]string)
+	}
+	// Set the labels to the pod template.
+	for k, v := range labels {
+		d.Spec.Template.Labels[k] = v
 	}
 
 	return d, nil

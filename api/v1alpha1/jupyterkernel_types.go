@@ -23,7 +23,7 @@ import (
 
 // JupyterKernelSpec defines the desired state of JupyterKernel
 type JupyterKernelCRDSpec struct {
-	Template *v1.PodTemplate `json:"template,omitempty"`
+	Template *v1.PodTemplateSpec `json:"template,omitempty"`
 }
 
 // JupyterKernelStatus defines the observed state of JupyterKernel

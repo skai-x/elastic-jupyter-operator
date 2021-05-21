@@ -177,7 +177,7 @@ func (in *JupyterKernelCRDSpec) DeepCopyInto(out *JupyterKernelCRDSpec) {
 	*out = *in
 	if in.Template != nil {
 		in, out := &in.Template, &out.Template
-		*out = new(v1.PodTemplate)
+		*out = new(v1.PodTemplateSpec)
 		(*in).DeepCopyInto(*out)
 	}
 }
@@ -445,7 +445,7 @@ func (in *JupyterKernelTemplateSpec) DeepCopyInto(out *JupyterKernelTemplateSpec
 	*out = *in
 	if in.Template != nil {
 		in, out := &in.Template, &out.Template
-		*out = new(v1.PodTemplate)
+		*out = new(v1.PodTemplateSpec)
 		(*in).DeepCopyInto(*out)
 	}
 }

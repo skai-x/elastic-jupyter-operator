@@ -8,6 +8,6 @@ spec:
       app: enterprise-gateway
       component: kernel
     spec:
-      restartPolicy: Never
+      restartPolicy: Always
       containers:
         - name: kernel

@@ -18,7 +18,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -26,6 +25,7 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
+	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	"github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
 )
@@ -46,9 +46,12 @@ const (
 	labelKernelID = "kernel_id"
 )
 
-var kernelID, portRange, responseAddr,
+var (
+	kernelID, portRange, responseAddr,
 	publicKey, sparkContextInitMode,
 	kernelTemplateName, kernelTemplateNamespace string
+	verbose bool
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -56,6 +59,12 @@ var rootCmd = &cobra.Command{
 	Short: "Launch kernels",
 	Long:  `Launch kernels in the jupyter enterprise gateway`,
 	Run: func(cmd *cobra.Command, args []string) {
+		logger := zap.New(zap.UseDevMode(verbose))
+		logger.Info("Launching the kernel",
+			"kernelID", kernelID, "responseAddr", responseAddr,
+			"kernelTemplateName", kernelTemplateName,
+			"kernelTemplateNamespace", kernelTemplateNamespace)
+
 		if kernelTemplateName == "" || kernelTemplateNamespace == "" {
 			panic(fmt.Errorf("Failed to get the template's name or namespace"))
 		}
@@ -84,27 +93,32 @@ var rootCmd = &cobra.Command{
 			panic(err)
 		}
 
-		tpl := kt.Spec.Template
+		kernel := &v1alpha1.JupyterKernel{
+			ObjectMeta: kt.Spec.Template.ObjectMeta,
+			Spec: v1alpha1.JupyterKernelCRDSpec{
+				Template: kt.Spec.Template,
+			},
+		}
 
 		// Set image from the kernel spec.
 		image := os.Getenv(envKernelImage)
-		if image != "" && len(tpl.Template.Spec.Containers) != 0 {
-			tpl.Template.Spec.Containers[0].Image = image
+		if image != "" && len(kernel.Spec.Template.Spec.Containers) != 0 {
+			kernel.Spec.Template.Spec.Containers[0].Image = image
 		}
 
-		pod := &v1.Pod{
-			ObjectMeta: tpl.ObjectMeta,
-			Spec:       tpl.Template.Spec,
+		kernel.Name = os.Getenv(envKernelPodName)
+		kernel.Namespace = os.Getenv(envKernelNamespace)
+		if kernel.Spec.Template.Labels == nil {
+			kernel.Spec.Template.Labels = make(map[string]string)
 		}
+		kernel.Spec.Template.Labels[labelKernelID] = kernelID
 
-		pod.Name = os.Getenv(envKernelPodName)
-		pod.Namespace = os.Getenv(envKernelNamespace)
-		if pod.Labels == nil {
-			pod.Labels = make(map[string]string)
+		// Set the environment variables.
+		if kernel.Spec.Template.Spec.Containers[0].Env == nil {
+			kernel.Spec.Template.Spec.Containers[0].Env = make([]v1.EnvVar, 0)
 		}
-		pod.Labels[labelKernelID] = kernelID
-
-		pod.Spec.Containers[0].Env = append(pod.Spec.Containers[0].Env,
+		kernel.Spec.Template.Spec.Containers[0].Env = append(
+			kernel.Spec.Template.Spec.Containers[0].Env,
 			v1.EnvVar{
 				Name:  envPortRange,
 				Value: portRange,
@@ -143,14 +157,11 @@ var rootCmd = &cobra.Command{
 			},
 		)
 
-		if err := cli.Create(context.TODO(), pod); err != nil {
+		// TODO(gaocegege): Set the owner reference to the gateway.
+		logger.Info("Creating the kernel", "kernel", kernel)
+		if err := cli.Create(context.TODO(), kernel); err != nil {
 			panic(err)
 		}
-
-		log.Println(kernelID, portRange,
-			responseAddr, publicKey, sparkContextInitMode)
-		log.Println("done")
-
 	},
 }
 
@@ -184,4 +195,6 @@ func init() {
 		"kernel-template-name", "", "kernel template CRD name")
 	rootCmd.Flags().StringVar(&kernelTemplateNamespace,
 		"kernel-template-namespace", "", "kernel template CRD namesapce")
+
+	rootCmd.Flags().BoolVar(&verbose, "verbose", false, "Set verbose")
 }
