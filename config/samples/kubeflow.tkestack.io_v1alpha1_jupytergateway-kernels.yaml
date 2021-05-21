@@ -4,6 +4,7 @@ metadata:
   name: jupytergateway-sample
 spec:
   cullIdleTimeout: 3600
+  image: ccr.ccs.tencentyun.com/kubeflow-oteam/enterprise-gateway:dev
   kernels: 
   - python-kubernetes
   resources:

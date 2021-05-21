@@ -7,9 +7,8 @@ spec:
     metadata: 
       app: enterprise-gateway
       component: kernel
-    template:
-      spec:
-        restartPolicy: Never
-        containers:
-          - name: kernel
-            image: ccr.ccs.tencentyun.com/kubeflow-oteam/jupyter-kernel-py:2.5.0
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: kernel
+          image: ccr.ccs.tencentyun.com/kubeflow-oteam/jupyter-kernel-py:2.5.0
