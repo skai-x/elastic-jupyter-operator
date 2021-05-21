@@ -146,7 +146,7 @@ JupyterKernelSpec defines the desired state of JupyterKernel
 [cols="25a,75a", options="header"]
 |===
 | Field | Description
-| *`template`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#podtemplate-v1-core[$$PodTemplate$$]__ | 
+| *`template`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#podtemplatespec-v1-core[$$PodTemplateSpec$$]__ | 
 |===
 
 
@@ -345,7 +345,7 @@ JupyterKernelTemplateSpec defines the desired state of JupyterKernelTemplate
 [cols="25a,75a", options="header"]
 |===
 | Field | Description
-| *`template`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#podtemplate-v1-core[$$PodTemplate$$]__ | 
+| *`template`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#podtemplatespec-v1-core[$$PodTemplateSpec$$]__ | 
 |===
 
 
