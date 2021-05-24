@@ -11,7 +11,7 @@ import (
 
 const (
 	labelNS     = "namespace"
-	labelKernel = "kernel"
+	labelKernel = "kernel_id"
 )
 
 // generator defines the generator which is used to generate
