@@ -23,7 +23,7 @@ import (
 
 // JupyterKernelSpec defines the desired state of JupyterKernel
 type JupyterKernelCRDSpec struct {
-	Template *v1.PodTemplateSpec `json:"template,omitempty"`
+	Template v1.PodTemplateSpec `json:"template,omitempty"`
 }
 
 // JupyterKernelStatus defines the observed state of JupyterKernel
@@ -72,6 +72,7 @@ const (
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:pruning:PreserveUnknownFields
 
 // JupyterKernel is the Schema for the jupyterkernels API
 type JupyterKernel struct {

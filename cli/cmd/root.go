@@ -96,7 +96,7 @@ var rootCmd = &cobra.Command{
 		kernel := &v1alpha1.JupyterKernel{
 			ObjectMeta: kt.Spec.Template.ObjectMeta,
 			Spec: v1alpha1.JupyterKernelCRDSpec{
-				Template: kt.Spec.Template,
+				Template: *kt.Spec.Template,
 			},
 		}
 
@@ -111,6 +111,8 @@ var rootCmd = &cobra.Command{
 		if kernel.Spec.Template.Labels == nil {
 			kernel.Spec.Template.Labels = make(map[string]string)
 		}
+		// We cannot rely on it because of
+		// https://github.com/kubernetes-sigs/controller-tools/issues/448
 		kernel.Spec.Template.Labels[labelKernelID] = kernelID
 
 		// Set the environment variables.
