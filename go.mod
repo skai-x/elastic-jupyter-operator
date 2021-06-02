@@ -5,13 +5,12 @@ go 1.13
 require (
 	github.com/elastic/crd-ref-docs v0.0.7 // indirect
 	github.com/go-logr/logr v0.1.0
-	github.com/google/addlicense v0.0.0-20200906110928-a0294312aa76 // indirect
-	github.com/mitchellh/go-homedir v1.1.0
 	github.com/onsi/ginkgo v1.12.1
 	github.com/onsi/gomega v1.10.1
 	github.com/spf13/cobra v0.0.5
-	github.com/spf13/viper v1.3.2
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
+	go.uber.org/multierr v1.4.0 // indirect
+	go.uber.org/zap v1.13.0 // indirect
+	golang.org/x/tools v0.0.0-20191114161115-faa69481e761 // indirect
 	k8s.io/api v0.18.6
 	k8s.io/apimachinery v0.18.6
 	k8s.io/client-go v0.18.6

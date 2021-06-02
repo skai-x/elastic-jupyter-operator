@@ -16,6 +16,8 @@ Package v1alpha1 contains API Schema definitions for the kubeflow.tkestack.io v1
 .Resource Types
 - xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupytergateway[$$JupyterGateway$$]
 - xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupytergatewaylist[$$JupyterGatewayList$$]
+- xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernel[$$JupyterKernel$$]
+- xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernellist[$$JupyterKernelList$$]
 - xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelspec[$$JupyterKernelSpec$$]
 - xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelspeclist[$$JupyterKernelSpecList$$]
 - xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkerneltemplate[$$JupyterKernelTemplate$$]
@@ -108,6 +110,99 @@ JupyterGatewayStatus defines the observed state of JupyterGateway
 |===
 
 
+[id="{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernel"]
+==== JupyterKernel 
+
+JupyterKernel is the Schema for the jupyterkernels API
+
+.Appears In:
+****
+- xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernellist[$$JupyterKernelList$$]
+****
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`apiVersion`* __string__ | `kubeflow.tkestack.io/v1alpha1`
+| *`kind`* __string__ | `JupyterKernel`
+| *`TypeMeta`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#typemeta-v1-meta[$$TypeMeta$$]__ | 
+| *`metadata`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#objectmeta-v1-meta[$$ObjectMeta$$]__ | Refer to Kubernetes API documentation for fields of `metadata`.
+
+| *`spec`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelcrdspec[$$JupyterKernelCRDSpec$$]__ | 
+| *`status`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelstatus[$$JupyterKernelStatus$$]__ | 
+|===
+
+
+[id="{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelcrdspec"]
+==== JupyterKernelCRDSpec 
+
+JupyterKernelSpec defines the desired state of JupyterKernel
+
+.Appears In:
+****
+- xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernel[$$JupyterKernel$$]
+****
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`template`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#podtemplatespec-v1-core[$$PodTemplateSpec$$]__ | 
+|===
+
+
+[id="{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelcondition"]
+==== JupyterKernelCondition 
+
+
+
+.Appears In:
+****
+- xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelstatus[$$JupyterKernelStatus$$]
+****
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`type`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelconditiontype[$$JupyterKernelConditionType$$]__ | Type of job condition.
+| *`status`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#conditionstatus-v1-core[$$ConditionStatus$$]__ | Status of the condition, one of True, False, Unknown.
+| *`reason`* __string__ | The reason for the condition's last transition.
+| *`message`* __string__ | A human readable message indicating details about the transition.
+| *`lastUpdateTime`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#time-v1-meta[$$Time$$]__ | The last time this condition was updated.
+| *`lastTransitionTime`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#time-v1-meta[$$Time$$]__ | Last time the condition transitioned from one status to another.
+|===
+
+
+[id="{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelconditiontype"]
+==== JupyterKernelConditionType (string) 
+
+
+
+.Appears In:
+****
+- xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelcondition[$$JupyterKernelCondition$$]
+****
+
+
+
+[id="{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernellist"]
+==== JupyterKernelList 
+
+JupyterKernelList contains a list of JupyterKernel
+
+
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`apiVersion`* __string__ | `kubeflow.tkestack.io/v1alpha1`
+| *`kind`* __string__ | `JupyterKernelList`
+| *`TypeMeta`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#typemeta-v1-meta[$$TypeMeta$$]__ | 
+| *`metadata`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#listmeta-v1-meta[$$ListMeta$$]__ | Refer to Kubernetes API documentation for fields of `metadata`.
+
+| *`items`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernel[$$JupyterKernel$$]__ | 
+|===
+
+
 [id="{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelspec"]
 ==== JupyterKernelSpec 
 
@@ -166,13 +261,33 @@ JupyterKernelSpecSpec defines the desired state of JupyterKernelSpec
 | *`language`* __string__ | 
 | *`displayName`* __string__ | 
 | *`image`* __string__ | 
-| *`env`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#envvar-v1-core[$$EnvVar$$] array__ | 
+| *`env`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#envvar-v1-core[$$EnvVar$$]__ | 
 | *`command`* __string array__ | 
 | *`className`* __string__ | 
 | *`template`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#objectreference-v1-core[$$ObjectReference$$]__ | 
 |===
 
 
+
+
+[id="{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelstatus"]
+==== JupyterKernelStatus 
+
+JupyterKernelStatus defines the observed state of JupyterKernel
+
+.Appears In:
+****
+- xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernel[$$JupyterKernel$$]
+****
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`conditions`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelcondition[$$JupyterKernelCondition$$] array__ | Conditions is an array of current observed job conditions.
+| *`startTime`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#time-v1-meta[$$Time$$]__ | Represents time when the job was acknowledged by the job controller. It is not guaranteed to be set in happens-before order across separate operations. It is represented in RFC3339 form and is in UTC.
+| *`completionTime`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#time-v1-meta[$$Time$$]__ | Represents time when the job was completed. It is not guaranteed to be set in happens-before order across separate operations. It is represented in RFC3339 form and is in UTC.
+| *`lastReconcileTime`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#time-v1-meta[$$Time$$]__ | Represents last time when the job was reconciled. It is not guaranteed to be set in happens-before order across separate operations. It is represented in RFC3339 form and is in UTC.
+|===
 
 
 [id="{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkerneltemplate"]
@@ -230,7 +345,7 @@ JupyterKernelTemplateSpec defines the desired state of JupyterKernelTemplate
 [cols="25a,75a", options="header"]
 |===
 | Field | Description
-| *`template`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#podtemplate-v1-core[$$PodTemplate$$]__ | 
+| *`template`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#podtemplatespec-v1-core[$$PodTemplateSpec$$]__ | 
 |===
 
 

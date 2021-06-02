@@ -1,13 +1,14 @@
 apiVersion: kubeflow.tkestack.io/v1alpha1
-kind: JupyterKernelTemplate
+kind: JupyterKernel
 metadata:
-  name: jupyterkerneltemplate-sample
+  name: jupyterkernel-sample
 spec:
   template:
     metadata: 
       app: enterprise-gateway
       component: kernel
     spec:
-      restartPolicy: Always
+      restartPolicy: Never
       containers:
         - name: kernel
+          image: ccr.ccs.tencentyun.com/kubeflow-oteam/jupyter-kernel-py:2.5.0
