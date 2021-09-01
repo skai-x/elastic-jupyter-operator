@@ -26,3 +26,4 @@ bin
 vendor/
 /enterprise_gateway/
 .vscode/
+/elastic-jupyter-operator

@@ -18,5 +18,6 @@ package main
 import "github.com/tkestack/elastic-jupyter-operator/cli/cmd"
 
 func main() {
+	// kubeflow-launcher is a launcher for Kubeflow.
 	cmd.Execute()
 }

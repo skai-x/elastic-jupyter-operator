@@ -179,6 +179,7 @@ func (r Reconciler) reconcileService() error {
 func (r Reconciler) reconcileDeployment(sa string) error {
 	desired, err := r.gen.DesiredDeploymentWithoutOwner(sa)
 	if err != nil {
+		r.recorder.Event(r.instance, v1.EventTypeWarning, "FailedToGenerate", err.Error())
 		return err
 	}
 
@@ -198,11 +199,13 @@ func (r Reconciler) reconcileDeployment(sa string) error {
 		if err := r.cli.Create(context.TODO(), desired); err != nil {
 			r.log.Error(err, "Failed to create the deployment",
 				"deployment", desired.Name)
+			r.recorder.Event(r.instance, v1.EventTypeWarning, "FailedToCreate", err.Error())
 			return err
 		}
 	} else if err != nil {
 		r.log.Error(err, "failed to get the expected deployment",
 			"deployment", desired.Name)
+		r.recorder.Event(r.instance, v1.EventTypeWarning, "FailedToGet", err.Error())
 		return err
 	}
 
@@ -212,6 +215,7 @@ func (r Reconciler) reconcileDeployment(sa string) error {
 			r.log.Error(err, "failed to update status",
 				"namespace", r.instance.Namespace,
 				"jupytergateway", r.instance.Name)
+			r.recorder.Event(r.instance, v1.EventTypeWarning, "FailedToUpdateStatus", err.Error())
 			return err
 		}
 	}
