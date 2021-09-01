@@ -50,10 +50,10 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
 
-    - name: Install kubebuilder
-      uses: RyanSiu1995/kubebuilder-action@v1.2
-      with:
-        version: 3.0.0
-
     - name: Test
-      run: go test -v ./...
+      run: |
+      curl -L -O "https://github.com/kubernetes-sigs/kubebuilder/releases/download/v2.3.0/kubebuilder_2.3.0_linux_amd64.tar.gz"
+      tar -zxvf kubebuilder_2.3.0_linux_amd64.tar.gz
+      sudo mv kubebuilder_2.3.0_linux_amd64 /usr/local/kubebuilder
+      export PATH=$PATH:/usr/local/kubebuilder/bin
+      go test -v ./...
