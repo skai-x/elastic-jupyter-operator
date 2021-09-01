@@ -32,6 +32,24 @@ jobs:
     - name: Build the kubeflow-launcher
       run: go build -v ./cli/main.go
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+
+    - name: Reuse go mod cache
+      uses: actions/cache@v2
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
     - name: Install kubebuilder
       uses: RyanSiu1995/kubebuilder-action@v1.2
       with:
