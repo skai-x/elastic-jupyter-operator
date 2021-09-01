@@ -17,6 +17,14 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: 1.17
+    
+    - name: Reuse go mod cache
+      uses: actions/cache@v2
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
 
     - name: Build the operator
       run: go build -v ./main.go
@@ -24,5 +32,28 @@ jobs:
     - name: Build the kubeflow-launcher
       run: go build -v ./cli/main.go
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+
+    - name: Reuse go mod cache
+      uses: actions/cache@v2
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
     - name: Test
-      run: go test -v ./...
+      run: |
+        curl -L -O "https://github.com/kubernetes-sigs/kubebuilder/releases/download/v2.3.0/kubebuilder_2.3.0_linux_amd64.tar.gz"
+        tar -zxvf kubebuilder_2.3.0_linux_amd64.tar.gz
+        sudo mv kubebuilder_2.3.0_linux_amd64 /usr/local/kubebuilder
+        export PATH=$PATH:/usr/local/kubebuilder/bin
+        go test -v ./...
