@@ -72,19 +72,20 @@ var _ = Describe("JupyterNotebook controller", func() {
 		})
 
 		It("Should update successfully", func() {
+			name := "NewName"
 			actual := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
 			Expect(k8sClient.Get(context.Background(), key, actual)).Should(Succeed())
-			actual.Spec.Template.Name = "NewName"
+			actual.Spec.Template.Name = name
 			Expect(k8sClient.Update(context.Background(), actual)).Should(Succeed())
 
 			By("Expecting template name")
 			Eventually(func() string {
-				actual := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
-				if err := k8sClient.Get(context.Background(), key, actual); err == nil {
+				notebook := &kubeflowtkestackiov1alpha1.JupyterNotebook{}
+				if err := k8sClient.Get(context.Background(), key, notebook); err == nil {
 					return actual.Spec.Template.Name
 				}
 				return ""
-			}, timeout, interval).Should(Equal("NewName"))
+			}, timeout, interval).Should(Equal(name))
 		})
 
 		It("Should delete successfully", func() {
