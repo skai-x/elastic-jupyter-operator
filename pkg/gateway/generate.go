@@ -216,6 +216,10 @@ func (g generator) DesiredDeploymentWithoutOwner(
 									Value: g.gateway.Namespace,
 								},
 								{
+									Name:  "EG_NAME",
+									Value: g.gateway.Name,
+								},
+								{
 									// TODO(gaocegege): Make it configurable.
 									Name:  "EG_SHARED_NAMESPACE",
 									Value: "true",

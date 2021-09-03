@@ -22,9 +22,11 @@ import (
 
 	"github.com/spf13/cobra"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes/scheme"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	"github.com/tkestack/elastic-jupyter-operator/api/v1alpha1"
@@ -35,13 +37,16 @@ const (
 	envKernelImage     = "KERNEL_IMAGE"
 	envKernelNamespace = "KERNEL_NAMESPACE"
 	envKernelID        = "KERNEL_ID"
-	envPortRange       = "EG_PORT_RANGE"
-	envResponseAddress = "EG_RESPONSE_ADDRESS"
-	envPublicKey       = "EG_PUBLIC_KEY"
 	envKernelLanguage  = "KERNEL_LANGUAGE"
 	envKernelName      = "KERNEL_NAME"
 	envKernelSpark     = "KERNEL_SPARK_CONTEXT_INIT_MODE"
 	envKernelUsername  = "KERNEL_USERNAME"
+
+	envPortRange        = "EG_PORT_RANGE"
+	envResponseAddress  = "EG_RESPONSE_ADDRESS"
+	envPublicKey        = "EG_PUBLIC_KEY"
+	envGatewayName      = "EG_NAME"
+	envGatewayNamespace = "EG_NAMESPACE"
 
 	labelKernelID = "kernel_id"
 )
@@ -50,7 +55,8 @@ var (
 	kernelID, portRange, responseAddr,
 	publicKey, sparkContextInitMode,
 	kernelTemplateName, kernelTemplateNamespace string
-	verbose bool
+	gatewayName string
+	verbose     bool
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -60,14 +66,24 @@ var rootCmd = &cobra.Command{
 	Long:  `Launch kernels in the jupyter enterprise gateway`,
 	Run: func(cmd *cobra.Command, args []string) {
 		logger := zap.New(zap.UseDevMode(verbose))
+
+		gatewayNamespace := os.Getenv(envGatewayNamespace)
+		gatewayName := os.Getenv(envGatewayName)
+
+		if gatewayName == "" || gatewayNamespace == "" {
+			panic(fmt.Errorf("failed to get the gateway name or namespace from the env var"))
+		}
+		if kernelTemplateName == "" || kernelTemplateNamespace == "" {
+			panic(fmt.Errorf("failed to get the template's name or namespace"))
+		}
+
 		logger.Info("Launching the kernel",
 			"kernelID", kernelID, "responseAddr", responseAddr,
 			"kernelTemplateName", kernelTemplateName,
-			"kernelTemplateNamespace", kernelTemplateNamespace)
-
-		if kernelTemplateName == "" || kernelTemplateNamespace == "" {
-			panic(fmt.Errorf("Failed to get the template's name or namespace"))
-		}
+			"kernelTemplateNamespace", kernelTemplateNamespace,
+			"gatewayName", gatewayName,
+			"gatewayNamespace", gatewayNamespace,
+		)
 
 		if err := v1alpha1.AddToScheme(scheme.Scheme); err != nil {
 			panic(err)
@@ -159,7 +175,19 @@ var rootCmd = &cobra.Command{
 			},
 		)
 
-		// TODO(gaocegege): Set the owner reference to the gateway.
+		gateway := &v1alpha1.JupyterGateway{}
+		if err := cli.Get(context.TODO(), types.NamespacedName{
+			Name:      gatewayName,
+			Namespace: gatewayNamespace,
+		}, gateway); err != nil {
+			panic(err)
+		}
+
+		if err := controllerutil.SetControllerReference(
+			gateway, kernel, scheme.Scheme); err != nil {
+			panic(err)
+		}
+
 		logger.Info("Creating the kernel", "kernel", kernel)
 		if err := cli.Create(context.TODO(), kernel); err != nil {
 			panic(err)
