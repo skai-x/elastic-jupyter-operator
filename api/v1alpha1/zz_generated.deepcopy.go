@@ -107,6 +107,11 @@ func (in *JupyterGatewaySpec) DeepCopyInto(out *JupyterGatewaySpec) {
 		*out = new(int32)
 		**out = **in
 	}
+	if in.LogLevel != nil {
+		in, out := &in.LogLevel, &out.LogLevel
+		*out = new(LogLevel)
+		**out = **in
+	}
 	if in.Resources != nil {
 		in, out := &in.Resources, &out.Resources
 		*out = new(v1.ResourceRequirements)

@@ -253,6 +253,15 @@ func (g generator) DesiredDeploymentWithoutOwner(
 		d.Spec.Template.Spec.Containers[0].Image = g.gateway.Spec.Image
 	}
 
+	if g.gateway.Spec.LogLevel != nil {
+		env := v1.EnvVar{
+			Name:  "EG_LOG_LEVEL",
+			Value: string(*g.gateway.Spec.LogLevel),
+		}
+		d.Spec.Template.Spec.Containers[0].Env = append(
+			d.Spec.Template.Spec.Containers[0].Env, env)
+	}
+
 	if g.gateway.Spec.CullIdleTimeout != nil {
 		env := v1.EnvVar{
 			Name:  "EG_CULL_IDLE_TIMEOUT",

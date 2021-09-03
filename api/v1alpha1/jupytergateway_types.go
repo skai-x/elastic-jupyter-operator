@@ -40,6 +40,8 @@ type JupyterGatewaySpec struct {
 	// exceeding the cull timeout value.
 	CullInterval *int32 `json:"cullInterval,omitempty"`
 
+	LogLevel *LogLevel `json:"logLevel,omitempty"`
+
 	// Compute Resources required by this container.
 	// Cannot be updated.
 	// More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
@@ -50,6 +52,14 @@ type JupyterGatewaySpec struct {
 
 	ClusterRole *string `json:"clusterRole,omitempty"`
 }
+
+type LogLevel string
+
+const (
+	LogLevelDebug   = "DEBUG"
+	LogLevelInfo    = "INFO"
+	LogLevelWarning = "WARNING"
+)
 
 // JupyterGatewayStatus defines the observed state of JupyterGateway
 type JupyterGatewayStatus struct {
