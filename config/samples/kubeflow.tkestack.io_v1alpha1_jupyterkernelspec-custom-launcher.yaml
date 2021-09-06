@@ -6,6 +6,7 @@ spec:
   language: Python
   displayName: "Python on Kubernetes as a JupyterKernelSpec"
   image: ccr.ccs.tencentyun.com/kubeflow-oteam/jupyter-kernel-py:2.5.0
+  className: enterprise_gateway.services.processproxies.kubeflow.KubeflowProcessProxy
   template:
     namespace: default
     name: jupyterkerneltemplate-sample
