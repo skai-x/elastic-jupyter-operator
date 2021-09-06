@@ -3,7 +3,9 @@ kind: JupyterGateway
 metadata:
   name: jupytergateway-sample
 spec:
-  cullIdleTimeout: 3600
+  cullIdleTimeout: 10
+  cullInterval: 10
+  logLevel: DEBUG
   image: ccr.ccs.tencentyun.com/kubeflow-oteam/enterprise-gateway:dev
   kernels: 
   - python-kubernetes

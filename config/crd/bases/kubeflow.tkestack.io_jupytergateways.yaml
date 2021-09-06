@@ -52,6 +52,8 @@ spec:
                 items:
                   type: string
                 type: array
+              logLevel:
+                type: string
               resources:
                 description: 'Compute Resources required by this container. Cannot be updated. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
                 properties:
