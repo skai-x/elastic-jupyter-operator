@@ -3,6 +3,8 @@ kind: JupyterNotebook
 metadata:
   name: jupyternotebook-simple
 spec:
+  auth:
+    mode: disable
   template:
     metadata:
       labels:
@@ -11,3 +13,4 @@ spec:
       containers:
         - name: notebook
           image: jupyter/base-notebook:python-3.8.6
+          command: ["tini", "-g", "--", "start-notebook.sh"]
