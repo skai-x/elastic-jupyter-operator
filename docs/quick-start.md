@@ -23,6 +23,8 @@ spec:
 $ kubectl apply -f ./examples/simple-deployments/kubeflow.tkestack.io_v1alpha1_jupyternotebook.yaml
 ```
 
+Then you can get the 
+
 ## 使用
 
 首先，创建一个 Jupyter Gateway CR：
