@@ -77,6 +77,12 @@ var (
 			Auth: &v1alpha1.JupyterAuth{
 				Password: &testPwd,
 			},
+			Template: &v1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: map[string]string{"app": "notebook"},
+				},
+				Spec: podSpec,
+			},
 		},
 	}
 
@@ -106,7 +112,7 @@ func TestGenerate(t *testing.T) {
 	}
 
 	tests := []test{
-		{input: nil, expectedErr: errors.New("Got nil when initializing Generator"), expectedGen: nil},
+		{input: nil, expectedErr: errors.New("the notebook is null"), expectedGen: nil},
 		{input: notebookWithTemplate, expectedErr: nil, expectedGen: &generator{nb: notebookWithTemplate}},
 		{input: notebookWithGateway, expectedErr: nil, expectedGen: &generator{nb: notebookWithGateway}},
 		{input: completeNotebook, expectedErr: nil, expectedGen: &generator{nb: completeNotebook}},
