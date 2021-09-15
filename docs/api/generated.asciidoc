@@ -28,6 +28,25 @@ Package v1alpha1 contains API Schema definitions for the kubeflow.tkestack.io v1
 
 === Definitions
 
+[id="{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterauth"]
+==== JupyterAuth 
+
+JupyterAuth defines how to deal with jupyter notebook tokens or passwords. https://jupyter-notebook.readthedocs.io/en/stable/security.html
+
+.Appears In:
+****
+- xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyternotebookspec[$$JupyterNotebookSpec$$]
+****
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`mode`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-modejupyterauth[$$ModeJupyterAuth$$]__ | TODO(gaocegege): Is this field necessary since we make Token and Password a pointer?
+| *`token`* __string__ | 
+| *`password`* __string__ | 
+|===
+
+
 [id="{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupytergateway"]
 ==== JupyterGateway 
 
@@ -408,6 +427,7 @@ JupyterNotebookSpec defines the desired state of JupyterNotebook
 |===
 | Field | Description
 | *`gateway`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#objectreference-v1-core[$$ObjectReference$$]__ | 
+| *`auth`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterauth[$$JupyterAuth$$]__ | 
 | *`template`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#podtemplatespec-v1-core[$$PodTemplateSpec$$]__ | 
 |===
 
@@ -422,6 +442,18 @@ JupyterNotebookSpec defines the desired state of JupyterNotebook
 .Appears In:
 ****
 - xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupytergatewayspec[$$JupyterGatewaySpec$$]
+****
+
+
+
+[id="{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-modejupyterauth"]
+==== ModeJupyterAuth (string) 
+
+
+
+.Appears In:
+****
+- xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterauth[$$JupyterAuth$$]
 ****
 
 

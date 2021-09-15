@@ -27,9 +27,29 @@ import (
 // JupyterNotebookSpec defines the desired state of JupyterNotebook
 type JupyterNotebookSpec struct {
 	Gateway *v1.ObjectReference `json:"gateway,omitempty"`
+	Auth    *JupyterAuth        `json:"auth,omitempty"`
 
 	Template *v1.PodTemplateSpec `json:"template,omitempty"`
 }
+
+// JupyterAuth defines how to deal with jupyter notebook tokens or passwords.
+// https://jupyter-notebook.readthedocs.io/en/stable/security.html
+type JupyterAuth struct {
+	// TODO(gaocegege): Is this field necessary since we make Token and Password a pointer?
+	Mode     ModeJupyterAuth `json:"mode,omitempty"`
+	Token    *string         `json:"token,omitempty"`
+	Password *string         `json:"password,omitempty"`
+}
+
+type ModeJupyterAuth string
+
+const (
+	ModeJupyterAuthEnable ModeJupyterAuth = "enable"
+	// ModeJupyterAuthDisable disables authentication altogether by setting the token
+	// and password to empty strings, but this is NOT RECOMMENDED, unless authentication
+	// or access restrictions are handled at a different layer in your web application
+	ModeJupyterAuthDisable ModeJupyterAuth = "disable"
+)
 
 // JupyterNotebookStatus defines the observed state of JupyterNotebook
 type JupyterNotebookStatus struct {

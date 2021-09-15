@@ -35,6 +35,10 @@ const (
 
 	LabelNotebook = "notebook"
 	LabelNS       = "namespace"
+
+	argumentGatewayURL       = "--gateway-url"
+	argumentNotebookToken    = "--NotebookApp.token"
+	argumentNotebookPassword = "--NotebookApp.password"
 )
 
 type generator struct {
@@ -45,7 +49,7 @@ type generator struct {
 func newGenerator(nb *v1alpha1.JupyterNotebook) (
 	*generator, error) {
 	if nb == nil {
-		return nil, fmt.Errorf("Got nil when initializing Generator")
+		return nil, fmt.Errorf("the notebook is null")
 	}
 	g := &generator{
 		nb: nb,
@@ -139,7 +143,33 @@ func (g generator) DesiredDeploymentWithoutOwner() (*appsv1.Deployment, error) {
 		gatewayURL := fmt.Sprintf("http://%s.%s:%d",
 			g.nb.Spec.Gateway.Name, g.nb.Spec.Gateway.Namespace, defaultPort)
 		d.Spec.Template.Spec.Containers[0].Args = append(
-			d.Spec.Template.Spec.Containers[0].Args, "--gateway-url", gatewayURL)
+			d.Spec.Template.Spec.Containers[0].Args, argumentGatewayURL, gatewayURL)
+	}
+
+	// Set the auth configuration to notebook instance.
+	if g.nb.Spec.Auth != nil {
+		auth := g.nb.Spec.Auth
+		// Set the token and password to empty.
+		if auth.Mode == v1alpha1.ModeJupyterAuthDisable {
+			d.Spec.Template.Spec.Containers[0].Args = append(
+				d.Spec.Template.Spec.Containers[0].Args,
+				argumentNotebookToken, "",
+				argumentNotebookPassword, "",
+			)
+		} else {
+			if auth.Token != nil {
+				d.Spec.Template.Spec.Containers[0].Args = append(
+					d.Spec.Template.Spec.Containers[0].Args,
+					argumentNotebookToken, *auth.Token,
+				)
+			}
+			if auth.Password != nil {
+				d.Spec.Template.Spec.Containers[0].Args = append(
+					d.Spec.Template.Spec.Containers[0].Args,
+					argumentNotebookPassword, *auth.Password,
+				)
+			}
+		}
 	}
 
 	return d, nil

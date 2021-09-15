@@ -67,6 +67,19 @@ var (
 		},
 	}
 
+	testPwd                  = "test"
+	notebookWithAuthPassword = &v1alpha1.JupyterNotebook{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      JupyterNotebookName,
+			Namespace: JupyterNotebookNamespace,
+		},
+		Spec: v1alpha1.JupyterNotebookSpec{
+			Auth: &v1alpha1.JupyterAuth{
+				Password: &testPwd,
+			},
+		},
+	}
+
 	completeNotebook = &v1alpha1.JupyterNotebook{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      JupyterNotebookName,
@@ -120,12 +133,39 @@ func TestDesiredDeploymentWithoutOwner(t *testing.T) {
 	}
 
 	tests := []test{
-		{gen: &generator{nb: notebookWithTemplate}, expectedErr: nil, expectedImage: DefaultImage, expectedArgs: nil},
-		{gen: &generator{nb: notebookWithGateway}, expectedErr: nil, expectedImage: DefaultImageWithGateway,
-			expectedArgs: []string{"start-notebook.sh", "--gateway-url", fmt.Sprintf("http://%s.%s:%d", GatewayName, GatewayNamespace, 8888)}},
-		{gen: &generator{nb: completeNotebook}, expectedErr: nil, expectedImage: DefaultImage,
-			expectedArgs: []string{"--gateway-url", fmt.Sprintf("http://%s.%s:%d", GatewayName, GatewayNamespace, 8888)}},
-		{gen: &generator{nb: emptyNotebook}, expectedErr: errors.New("no gateway and template applied")},
+		{
+			gen:           &generator{nb: notebookWithTemplate},
+			expectedErr:   nil,
+			expectedImage: DefaultImage,
+			expectedArgs:  nil,
+		},
+		{
+			gen:           &generator{nb: notebookWithGateway},
+			expectedErr:   nil,
+			expectedImage: DefaultImageWithGateway,
+			expectedArgs: []string{
+				"start-notebook.sh",
+				argumentGatewayURL,
+				fmt.Sprintf("http://%s.%s:%d", GatewayName, GatewayNamespace, 8888),
+			},
+		},
+		{
+			gen:         &generator{nb: completeNotebook},
+			expectedErr: nil, expectedImage: DefaultImage,
+			expectedArgs: []string{
+				argumentGatewayURL,
+				fmt.Sprintf("http://%s.%s:%d", GatewayName, GatewayNamespace, 8888),
+			},
+		},
+		{
+			gen:         &generator{nb: emptyNotebook},
+			expectedErr: errors.New("no gateway and template applied"),
+		},
+		{
+			gen:         &generator{nb: notebookWithAuthPassword},
+			expectedErr: nil, expectedImage: DefaultImage,
+			expectedArgs: []string{argumentNotebookPassword, *notebookWithAuthPassword.Spec.Auth.Password},
+		},
 	}
 
 	for i, tc := range tests {
