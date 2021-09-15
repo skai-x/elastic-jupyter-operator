@@ -1,0 +1,13 @@
+apiVersion: kubeflow.tkestack.io/v1alpha1
+kind: JupyterNotebook
+metadata:
+  name: jupyternotebook-simple
+spec:
+  template:
+    metadata:
+      labels:
+        notebook: simple
+    spec:
+      containers:
+        - name: notebook
+          image: jupyter/base-notebook:python-3.8.6
