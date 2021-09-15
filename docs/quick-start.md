@@ -1,3 +1,30 @@
+## Quick start
+
+### Simple deployment
+
+You can create a simple Jupyter notebook with all components in one pod, like this:
+
+```
+$ cat ./examples/simple-deployments/kubeflow.tkestack.io_v1alpha1_jupyternotebook.yaml
+apiVersion: kubeflow.tkestack.io/v1alpha1
+kind: JupyterNotebook
+metadata:
+  name: jupyternotebook-simple
+spec:
+  template:
+    metadata:
+      labels:
+        notebook: simple
+    spec:
+      containers:
+        - name: notebook
+          image: jupyter/base-notebook:python-3.8.6
+
+$ kubectl apply -f ./examples/simple-deployments/kubeflow.tkestack.io_v1alpha1_jupyternotebook.yaml
+```
+
+Then you can get the 
+
 ## 使用
 
 首先，创建一个 Jupyter Gateway CR：
