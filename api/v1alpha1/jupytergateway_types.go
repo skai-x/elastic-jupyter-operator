@@ -48,8 +48,13 @@ type JupyterGatewaySpec struct {
 	// +optional
 	Resources *v1.ResourceRequirements `json:"resources,omitempty"`
 
+	// Docker image name.
+	// More info: https://kubernetes.io/docs/concepts/containers/images
+	// This field defaults to ccr.ccs.tencentyun.com/kubeflow-oteam/enterprise-gateway:2.5.0
+	// +optional
 	Image string `json:"image,omitempty"`
 
+	// ClusterRole for the gateway, which is used to create the kernel pods in the cluster. Defaults to enterprise-gateway-controller (created at startup).
 	ClusterRole *string `json:"clusterRole,omitempty"`
 }
 

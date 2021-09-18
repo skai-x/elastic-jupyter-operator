@@ -1,0 +1,8 @@
+apiVersion: kubeflow.tkestack.io/v1alpha1
+kind: JupyterGateway
+metadata:
+  name: jupytergateway-elastic
+spec:
+  # Timeout (in seconds) after which a kernel is considered idle and ready to be culled.
+  cullIdleTimeout: 3600
+  image: ccr.ccs.tencentyun.com/kubeflow-oteam/enterprise-gateway:2.5.0

@@ -1,0 +1,23 @@
+apiVersion: kubeflow.tkestack.io/v1alpha1
+kind: JupyterKernelSpec
+metadata:
+  name: python-kubernetes
+spec:
+  language: Python
+  displayName: "Python on Kubernetes as a JupyterKernelSpec"
+  image: ccr.ccs.tencentyun.com/kubeflow-oteam/jupyter-kernel-py:2.5.0
+  className: enterprise_gateway.services.processproxies.kubeflow.KubeflowProcessProxy
+  # Use the template defined in JupyterKernelTemplate CR.
+  template:
+    namespace: default
+    name: jupyterkerneltemplate-elastic-with-custom-kernels
+  command: 
+  # Use the default scripts to launch the kernel.
+  - "kubeflow-launcher"
+  - "--verbose"
+  - "--RemoteProcessProxy.kernel-id"
+  - "{kernel_id}"
+  - "--RemoteProcessProxy.port-range"
+  - "{port_range}"
+  - "--RemoteProcessProxy.response-address"
+  - "{response_address}"

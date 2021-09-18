@@ -31,9 +31,9 @@ kubectl apply -f ./hack/enterprise_gateway/prepare.yaml
 make deploy
 ```
 
-## Quick start
+## Quickstart
 
-You can follow the [quick start](./docs/quick-start.md) to create the notebook server and kernel in Kubernetes like this:
+You can follow the [quickstart](./docs/quick-start.md) to create the notebook server and kernel in Kubernetes like this:
 
 ```bash
 NAME                                                           READY   STATUS    RESTARTS   AGE
