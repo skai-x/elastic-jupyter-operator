@@ -1,0 +1,12 @@
+apiVersion: kubeflow.tkestack.io/v1alpha1
+kind: JupyterNotebook
+metadata:
+  name: jupyternotebook-elastic-with-custom-kernels
+spec:
+  gateway:
+    name: jupytergateway-elastic-with-custom-kernels
+    namespace: default
+  # Disable the password and token based auth in this example,
+  # please do not do it in PROD.
+  auth:
+    mode: disable

@@ -33,6 +33,7 @@ spec:
             description: JupyterGatewaySpec defines the desired state of JupyterGateway
             properties:
               clusterRole:
+                description: ClusterRole for the gateway, which is used to create the kernel pods in the cluster. Defaults to enterprise-gateway-controller (created at startup).
                 type: string
               cullIdleTimeout:
                 description: Timeout (in seconds) after which a kernel is considered idle and ready to be culled. Values of 0 or lower disable culling. Very short timeouts may result in kernels being culled for users with poor network connections. Ref https://jupyter-notebook.readthedocs.io/en/stable/config.html
@@ -46,6 +47,7 @@ spec:
                 description: DefaultKernel defines the default kernel in the gateway.
                 type: string
               image:
+                description: 'Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images This field defaults to ccr.ccs.tencentyun.com/kubeflow-oteam/enterprise-gateway:2.5.0'
                 type: string
               kernels:
                 description: Knernels defines the kernels in the gateway. We will add kernels at runtime, thus we do not make it a type.

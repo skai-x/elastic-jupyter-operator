@@ -108,8 +108,8 @@ JupyterGatewaySpec defines the desired state of JupyterGateway
 | *`cullInterval`* __integer__ | The interval (in seconds) on which to check for idle kernels exceeding the cull timeout value.
 | *`logLevel`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-loglevel[$$LogLevel$$]__ | 
 | *`resources`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#resourcerequirements-v1-core[$$ResourceRequirements$$]__ | Compute Resources required by this container. Cannot be updated. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
-| *`image`* __string__ | 
-| *`clusterRole`* __string__ | 
+| *`image`* __string__ | Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images This field defaults to ccr.ccs.tencentyun.com/kubeflow-oteam/enterprise-gateway:2.5.0
+| *`clusterRole`* __string__ | ClusterRole for the gateway, which is used to create the kernel pods in the cluster. Defaults to enterprise-gateway-controller (created at startup).
 |===
 
 

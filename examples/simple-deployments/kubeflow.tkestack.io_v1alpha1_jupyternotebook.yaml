@@ -3,6 +3,8 @@ kind: JupyterNotebook
 metadata:
   name: jupyternotebook-simple
 spec:
+  # Disable the password and token based auth in this example,
+  # please do not do it in PROD.
   auth:
     mode: disable
   template:

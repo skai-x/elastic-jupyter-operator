@@ -1,0 +1,12 @@
+apiVersion: kubeflow.tkestack.io/v1alpha1
+kind: JupyterGateway
+metadata:
+  name: jupytergateway-elastic-with-custom-kernels
+spec:
+  cullIdleTimeout: 10
+  cullInterval: 10
+  logLevel: DEBUG
+  image: ccr.ccs.tencentyun.com/kubeflow-oteam/enterprise-gateway:dev
+  # Use the kernel which is defined in JupyterKernelSpec CR.
+  kernels: 
+  - python-kubernetes
