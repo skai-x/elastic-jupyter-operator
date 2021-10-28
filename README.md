@@ -45,7 +45,7 @@ jupyternotebook-sample-5bf7d9d9fb-pdv9b                        1/1     Running  
 There are three pods running in the demo:
 
 - `jupyternotebook-sample-5bf7d9d9fb-pdv9b` is the notebook server
-- `jupytergateway-sample-858bbc8d5c-xds44` is the jupyter gatrway to support remote kernels
+- `jupytergateway-sample-858bbc8d5c-xds44` is the jupyter gateway to support remote kernels
 - `jovyan-fd191444-b08c-4668-ba4e-3748a54a0ac1-5789574d66-tb5cm` is the remote kernel
 
 The kernel will be deleted if the notebook does not use it in 10 mins. And it will be recreated if there is any new run in the notebook.
