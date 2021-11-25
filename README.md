@@ -50,6 +50,13 @@ There are three pods running in the demo:
 
 The kernel will be deleted if the notebook does not use it in 10 mins. And it will be recreated if there is any new run in the notebook.
 
+## Community
+
+Please join [![Discord][discord-badge]][discord-url]
+
+[discord-badge]: https://img.shields.io/discord/913359799058587658?logo=Discord&style=flat-square
+[discord-url]: https://discord.gg/NJsd4guhPM
+
 ## Design
 
 Please refer to [design doc](docs/design.md)
