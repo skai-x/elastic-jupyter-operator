@@ -11,7 +11,7 @@ There are some existing [Jupyter Notebook][] operators in Kubernetes community, 
 
 [Jupyter Enterprise Gateway][] could help us improve the utilization by running the notebook server processes and kernel processes separately. But there are some limitations. [Jupyter Enterprise Gateway][] is designed to be used on different resource managers, e.g. Yarn, Kubernetes, etc. Thus it is not Kubernetes native. Maintaining such a gateway and multiple notebook servers/kernels is not easy.
 
-<p align="center"><img src="docs/images/gateway.png" width="500"></p>
+<p align="center"><img src="images/gateway.png" width="500"></p>
 
 Besides this, customizing the kernel specifications requires [rebooting the enterprise gateway](https://github.com/jupyter/enterprise_gateway/blob/master/etc/docker/enterprise-gateway/Dockerfile#L30) on Kubernetes, because the kernel specifications are hard-coded in the image.
 
@@ -146,7 +146,7 @@ $ kubectl port-forward deploy/jupyternotebook-elastic-with-custom-kernels 8888:8
 
 [elastic-jupyter-operator][] reuses the [Jupyter Enterprise Gateway][] to support remote execution of Jupyter notebooks. The request will be sent to the notebook server process first when users execute the code in the browser. But the request cannot be processed since there is no kernel to execute it. The notebook server will issue a request then to the gateway to create a new kernel. The gateway creates the `JupyterKernel` CR via our custom `KubeflowProcessProxy` in the gateway's source code. The operator watches the `JupyterKernel` CR and creates the corresponding kernel pod in Kubernetes. Then the execution result will be sent back to the notebook server via ZeroMQ.
 
-<p align="center"><img src="docs/images/uml.png" width="500"></p>
+<p align="center"><img src="images/uml.png" width="500"></p>
 
 The gateway monitors the kernels and culls the idle kernels. The operator also monitors them to restart the kernel if the kernel is not ready.
 
