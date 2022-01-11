@@ -1,11 +1,14 @@
 # Build the elastic-jupyter-operator binary
-FROM golang:1.13 as builder
+FROM golang:1.17.6-alpine as builder
 
 WORKDIR /workspace
 # Copy the Go Modules manifests
 COPY go.mod go.mod
 COPY go.sum go.sum
-COPY vendor/ vendor/
+
+# Download libs first to use docker buildx caching
+RUN go mod download
+RUN go mod verify
 
 # Copy the go source
 COPY main.go main.go
@@ -14,7 +17,7 @@ COPY controllers/ controllers/
 COPY pkg/ pkg/
 
 # Build
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o elastic-jupyter-operator main.go
+RUN CGO_ENABLED=0 go build -a -o elastic-jupyter-operator main.go
 
 # Use distroless as minimal base image to package the elastic-jupyter-operator binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
