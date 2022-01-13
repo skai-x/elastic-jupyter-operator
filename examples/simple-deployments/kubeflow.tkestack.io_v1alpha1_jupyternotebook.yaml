@@ -14,5 +14,5 @@ spec:
     spec:
       containers:
         - name: notebook
-          image: jupyter/base-notebook:python-3.8.6
+          image: jupyter/base-notebook:python-3.9.7
           command: ["tini", "-g", "--", "start-notebook.sh"]

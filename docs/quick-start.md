@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: notebook
-          image: jupyter/base-notebook:python-3.8.6
+          image: jupyter/base-notebook:python-3.9.7
           command: ["tini", "-g", "--", "start-notebook.sh"]
 
 $ kubectl apply -f ./examples/simple-deployments/kubeflow.tkestack.io_v1alpha1_jupyternotebook.yaml

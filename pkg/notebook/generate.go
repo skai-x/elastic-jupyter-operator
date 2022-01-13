@@ -28,7 +28,7 @@ import (
 )
 
 const (
-	defaultImage         = "jupyter/base-notebook:python-3.8.6"
+	defaultImage         = "jupyter/base-notebook:python-3.9.7"
 	defaultContainerName = "notebook"
 	defaultPortName      = "notebook"
 	defaultPort          = 8888
