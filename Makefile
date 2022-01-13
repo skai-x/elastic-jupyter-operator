@@ -1,6 +1,7 @@
 
 # Image URL to use all building/pushing image targets
-IMG ?= ccr.ccs.tencentyun.com/kubeflow-oteam/elastic-jupyter-operator:latest
+IMG ?= ghcr.io/skai-x/elastic-jupyter-operator:latest
+REGISTRY_IMG ?= ghcr.io/skai-x/enterprise-gateway:latest
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:trivialVersions=true"
 
@@ -68,7 +69,7 @@ docker-build: test
 
 # Push the docker image
 docker-push:
-	docker push ${IMG}
+	docker buildx build --push --platform linux/amd64,linux/arm64 --tag ${IMG} .
 
 # find or download controller-gen
 # download controller-gen if necessary
@@ -104,3 +105,8 @@ endif
 
 install-tools:
 	go get github.com/elastic/crd-ref-docs
+
+enterprise-gateway:
+	cd enterprise_gateway && python setup.py sdist \
+		&& rm -rf *.egg-info && cd - && \
+		docker buildx build --push --platform linux/amd64,linux/arm64 --tag ${REGISTRY_IMG} -f enterprise_gateway/etc/docker/enterprise-gateway/Dockerfile .
