@@ -50,7 +50,7 @@ type JupyterGatewaySpec struct {
 
 	// Docker image name.
 	// More info: https://kubernetes.io/docs/concepts/containers/images
-	// This field defaults to ccr.ccs.tencentyun.com/kubeflow-oteam/enterprise-gateway:2.5.0
+	// This field defaults to ghcr.io/skai-x/enterprise-gateway:2.6.0
 	// +optional
 	Image string `json:"image,omitempty"`
 

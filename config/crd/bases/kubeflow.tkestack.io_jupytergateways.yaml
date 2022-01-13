@@ -47,7 +47,7 @@ spec:
                 description: DefaultKernel defines the default kernel in the gateway.
                 type: string
               image:
-                description: 'Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images This field defaults to ccr.ccs.tencentyun.com/kubeflow-oteam/enterprise-gateway:2.5.0'
+                description: 'Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images This field defaults to ghcr.io/skai-x/enterprise-gateway:2.6.0'
                 type: string
               kernels:
                 description: Knernels defines the kernels in the gateway. We will add kernels at runtime, thus we do not make it a type.
