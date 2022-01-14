@@ -178,7 +178,7 @@ Besides this, The KernelSpec CRD maintains a object reference to one KernelTempl
             "class_name": "enterprise_gateway.services.processproxies.k8s.KubernetesProcessProxy"
         },
         "config": {
-            "image_name": "ghcr.io/skai-x/jupyter-kernel-py:2.5.0"
+            "image_name": "ghcr.io/skai-x/jupyter-kernel-py:2.6.0"
         }
     },
     "argv": [
