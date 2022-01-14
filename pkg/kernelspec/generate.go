@@ -98,11 +98,11 @@ func (g generator) desiredJSON() (string, error) {
 		Language:    g.kernelSpec.Spec.Language,
 		DisplayName: g.kernelSpec.Spec.DisplayName,
 		Metadata: metadata{
-			Config: config{
-				ImageName: g.kernelSpec.Spec.Image,
-			},
 			ProcessProxy: processProxy{
 				ClassName: defaultClassName,
+				Config: config{
+					ImageName: g.kernelSpec.Spec.Image,
+				},
 			},
 		},
 		Argv: g.kernelSpec.Spec.Command,
