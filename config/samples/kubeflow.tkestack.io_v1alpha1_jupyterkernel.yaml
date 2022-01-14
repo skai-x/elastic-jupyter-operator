@@ -11,4 +11,4 @@ spec:
       restartPolicy: Never
       containers:
         - name: kernel
-          image: ghcr.io/skai-x/jupyter-kernel-py:2.5.0
+          image: ghcr.io/skai-x/jupyter-kernel-py:2.6.0

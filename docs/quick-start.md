@@ -87,7 +87,7 @@ metadata:
 spec:
   language: Python
   displayName: "Python on Kubernetes as a JupyterKernelSpec"
-  image: ghcr.io/skai-x/jupyter-kernel-py:2.5.0
+  image: ghcr.io/skai-x/jupyter-kernel-py:2.6.0
   className: enterprise_gateway.services.processproxies.kubeflow.KubeflowProcessProxy
   # Use the template defined in JupyterKernelTemplate CR.
   template:

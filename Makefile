@@ -109,7 +109,7 @@ install-tools:
 	go get github.com/elastic/crd-ref-docs
 
 enterprise-gateway:
-	cd enterprise_gateway && python setup.py sdist \
+	cd enterprise_gateway && python setup.py bdist_wheel \
 		&& rm -rf *.egg-info && cd - && \
 		docker buildx build --push --platform linux/amd64,linux/arm64 --tag ${REGISTRY_IMG} -f enterprise_gateway/etc/docker/enterprise-gateway/Dockerfile .
 
