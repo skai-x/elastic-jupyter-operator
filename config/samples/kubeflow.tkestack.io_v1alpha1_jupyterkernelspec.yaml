@@ -5,7 +5,7 @@ metadata:
 spec:
   language: Python
   displayName: "Python on Kubernetes as a JupyterKernelSpec"
-  image: ccr.ccs.tencentyun.com/kubeflow-oteam/jupyter-kernel-py:2.5.0
+  image: ghcr.io/skai-x/jupyter-kernel-py:2.5.0
   command: 
   - "python"
   # Use the default scripts to launch the kernel.

@@ -16,7 +16,7 @@ const (
 	JupyterNotebookNamespace = "default"
 	DefaultContainerName     = "notebook"
 	DefaultImage             = "busysandbox"
-	DefaultImageWithGateway  = "jupyter/base-notebook:python-3.8.6"
+	DefaultImageWithGateway  = "jupyter/base-notebook:python-3.9.7"
 	GatewayName              = "gateway"
 	GatewayNamespace         = "default"
 )

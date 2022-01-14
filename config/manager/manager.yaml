@@ -27,7 +27,7 @@ spec:
         - /elastic-jupyter-operator
         args:
         - --enable-leader-election
-        image: ccr.ccs.tencentyun.com/kubeflow-oteam/elastic-jupyter-operator:latest
+        image: ghcr.io/skai-x/elastic-jupyter-operator:latest
         name: manager
         resources:
           limits:

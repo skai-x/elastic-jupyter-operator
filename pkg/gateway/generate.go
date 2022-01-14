@@ -35,10 +35,10 @@ import (
 )
 
 const (
-	defaultImage         = "ccr.ccs.tencentyun.com/kubeflow-oteam/enterprise-gateway:2.5.0"
+	defaultImage         = "ghcr.io/skai-x/enterprise-gateway:2.6.0"
 	defaultContainerName = "gateway"
 	// TODO: This default kernel is not used by now
-	defaultKernelImage        = "ccr.ccs.tencentyun.com/kubeflow-oteam/jupyter-kernel-py:2.5.0"
+	defaultKernelImage        = "ghcr.io/skai-x/jupyter-kernel-py:2.5.0"
 	defaultPortName           = "gateway"
 	defaultKernel             = "python_kubernetes"
 	defaultPort               = 8888

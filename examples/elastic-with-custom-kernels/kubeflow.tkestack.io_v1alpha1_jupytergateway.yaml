@@ -6,7 +6,7 @@ spec:
   cullIdleTimeout: 10
   cullInterval: 10
   logLevel: DEBUG
-  image: ccr.ccs.tencentyun.com/kubeflow-oteam/enterprise-gateway:dev
+  image: ghcr.io/skai-x/enterprise-gateway:2.6.0
   # Use the kernel which is defined in JupyterKernelSpec CR.
   kernels: 
   - python-kubernetes

@@ -5,7 +5,7 @@ metadata:
 spec:
   language: Python
   displayName: "Elastic Python Kernel on Kubernetes"
-  image: ccr.ccs.tencentyun.com/kubeflow-oteam/jupyter-kernel-py:2.5.0
+  image: ghcr.io/skai-x/jupyter-kernel-py:2.6.0
   className: enterprise_gateway.services.processproxies.kubeflow.KubeflowProcessProxy
   # Use the template defined in JupyterKernelTemplate CR.
   template:

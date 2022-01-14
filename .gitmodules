@@ -1,0 +1,3 @@
+[submodule "enterprise_gateway"]
+	path = enterprise_gateway
+	url = git@github.com:skai-x/enterprise_gateway.git
