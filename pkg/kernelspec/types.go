@@ -9,11 +9,11 @@ type kernelConfig struct {
 
 type metadata struct {
 	ProcessProxy processProxy `json:"process_proxy,omitempty"`
-	Config       config       `json:"config,omitempty"`
 }
 
 type processProxy struct {
 	ClassName string `json:"class_name,omitempty"`
+	Config    config `json:"config,omitempty"`
 }
 
 type config struct {
