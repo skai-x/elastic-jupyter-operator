@@ -10,4 +10,4 @@ elastic-jupyter-operator 的架构如图所示，`JupyterGateway` 和 `JupyterNo
 
 Gateway 是对应的后端服务。它负责处理来自 Notebook CR 的请求，通过调用 Kubernetes 的 API 按需创建出真正负责处理用户计算任务的 Kernel。
 
-<p align="center"><img src="docs/images/arch.png" width="500"></p>
+<p align="center"><img src="./images/arch.jpeg" width="500"></p>

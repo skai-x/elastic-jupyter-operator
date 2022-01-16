@@ -146,7 +146,7 @@ $ kubectl port-forward deploy/jupyternotebook-elastic-with-custom-kernels 8888:8
 
 [elastic-jupyter-operator][] reuses the [Jupyter Enterprise Gateway][] to support remote execution of Jupyter notebooks. The request will be sent to the notebook server process first when users execute the code in the browser. But the request cannot be processed since there is no kernel to execute it. The notebook server will issue a request then to the gateway to create a new kernel. The gateway creates the `JupyterKernel` CR via our custom `KubeflowProcessProxy` in the gateway's source code. The operator watches the `JupyterKernel` CR and creates the corresponding kernel pod in Kubernetes. Then the execution result will be sent back to the notebook server via ZeroMQ.
 
-<p align="center"><img src="images/uml.png" width="500"></p>
+<p align="center"><img src="images/uml.jpeg" width="500"></p>
 
 The gateway monitors the kernels and culls the idle kernels. The operator also monitors them to restart the kernel if the kernel is not ready.
 

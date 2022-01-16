@@ -18,10 +18,10 @@ elastic-jupyter-operator provides elastic Jupyter notebook services with these f
 - Autoscale Jupyter kernels when the kernels are not used within the given time frame to increase the resource utilization.
 - Customize the kernel configuration in runtime without restarting the notebook.
 
-<p align="center"><img src="docs/images/elastic.png" width="600"></p>
+<p align="center"><img src="docs/images/elastic.jpeg" width="600"></p>
 Figure 1. elastic-jupyter-operator
 
-<p align="center"><img src="docs/images/jupyter.png" width="600"></p>
+<p align="center"><img src="docs/images/jupyter.jpeg" width="600"></p>
 Figure 2. Other Jupyter on Kubernetes solutions
 
 ## Deploy
