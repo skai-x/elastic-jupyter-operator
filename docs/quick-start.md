@@ -29,7 +29,7 @@ $ kubectl port-forward deploy/jupyternotebook-simple 8888:8888
 
 Then you can open the URL `http://127.0.0.1:8888/` to get the simple Jupyter notebook instance. The deployment follows the architecture below:
 
-<p align="center"><img src="./images/kubeflow.png" width="300"></p>
+<p align="center"><img src="./images/kubeflow.jpeg" width="300"></p>
 
 
 ## Elastic deployment
