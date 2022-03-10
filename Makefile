@@ -2,6 +2,7 @@
 # Image URL to use all building/pushing image targets
 IMG ?= ghcr.io/skai-x/elastic-jupyter-operator:latest
 REGISTRY_IMG ?= ghcr.io/skai-x/enterprise-gateway:latest
+REGISTRY_K8S_IMG ?= ghcr.io/skai-x/enterprise-gateway-with-kernel-spec:latest
 KERNEL_PY_IMG ?= ghcr.io/skai-x/jupyter-kernel-py:2.6.0
 KERNEL_R_IMG ?= ghcr.io/skai-x/jupyter-kernel-r:2.6.0
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
@@ -112,6 +113,12 @@ enterprise-gateway:
 	cd enterprise_gateway && python setup.py bdist_wheel \
 		&& rm -rf *.egg-info && cd - && \
 		docker buildx build --push --platform linux/amd64,linux/arm64 --tag ${REGISTRY_IMG} -f enterprise_gateway/etc/docker/enterprise-gateway/Dockerfile .
+	
+enterprise-gateway-k8s:
+	cd enterprise_gateway && make kernelspecs && \
+		python setup.py bdist_wheel \
+		&& rm -rf *.egg-info && cd - && \
+		docker buildx build --push --platform linux/amd64,linux/arm64 --tag ${REGISTRY_K8S_IMG} -f enterprise_gateway/etc/docker/enterprise-gateway-k8s/Dockerfile .
 
 kernel: kernel-py kernel-r
 
