@@ -4,7 +4,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.5.0
+    controller-gen.kubebuilder.io/version: v0.6.2
   creationTimestamp: null
   name: jupytergateways.kubeflow.tkestack.io
 spec:
@@ -22,10 +22,14 @@ spec:
         description: JupyterGateway is the Schema for the jupytergateways API
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
             type: string
           metadata:
             type: object
@@ -33,31 +37,40 @@ spec:
             description: JupyterGatewaySpec defines the desired state of JupyterGateway
             properties:
               clusterRole:
-                description: ClusterRole for the gateway, which is used to create the kernel pods in the cluster. Defaults to enterprise-gateway-controller (created at startup).
+                description: ClusterRole for the gateway, which is used to create
+                  the kernel pods in the cluster. Defaults to enterprise-gateway-controller
+                  (created at startup).
                 type: string
               cullIdleTimeout:
-                description: Timeout (in seconds) after which a kernel is considered idle and ready to be culled. Values of 0 or lower disable culling. Very short timeouts may result in kernels being culled for users with poor network connections. Ref https://jupyter-notebook.readthedocs.io/en/stable/config.html
+                description: Timeout (in seconds) after which a kernel is considered
+                  idle and ready to be culled. Values of 0 or lower disable culling.
+                  Very short timeouts may result in kernels being culled for users
+                  with poor network connections. Ref https://jupyter-notebook.readthedocs.io/en/stable/config.html
                 format: int32
                 type: integer
               cullInterval:
-                description: The interval (in seconds) on which to check for idle kernels exceeding the cull timeout value.
+                description: The interval (in seconds) on which to check for idle
+                  kernels exceeding the cull timeout value.
                 format: int32
                 type: integer
               defaultKernel:
                 description: DefaultKernel defines the default kernel in the gateway.
                 type: string
               image:
-                description: 'Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images This field defaults to ghcr.io/skai-x/enterprise-gateway:2.6.0'
+                description: 'Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images
+                  This field defaults to ghcr.io/skai-x/enterprise-gateway:2.6.0'
                 type: string
               kernels:
-                description: Knernels defines the kernels in the gateway. We will add kernels at runtime, thus we do not make it a type.
+                description: Knernels defines the kernels in the gateway. We will
+                  add kernels at runtime, thus we do not make it a type.
                 items:
                   type: string
                 type: array
               logLevel:
                 type: string
               resources:
-                description: 'Compute Resources required by this container. Cannot be updated. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                description: 'Compute Resources required by this container. Cannot
+                  be updated. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
                 properties:
                   limits:
                     additionalProperties:
@@ -66,7 +79,8 @@ spec:
                       - type: string
                       pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                       x-kubernetes-int-or-string: true
-                    description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                    description: 'Limits describes the maximum amount of compute resources
+                      allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
                     type: object
                   requests:
                     additionalProperties:
@@ -75,7 +89,10 @@ spec:
                       - type: string
                       pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                       x-kubernetes-int-or-string: true
-                    description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                    description: 'Requests describes the minimum amount of compute
+                      resources required. If Requests is omitted for a container,
+                      it defaults to Limits if that is explicitly specified, otherwise
+                      to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
                     type: object
                 type: object
             type: object
@@ -83,20 +100,26 @@ spec:
             description: JupyterGatewayStatus defines the observed state of JupyterGateway
             properties:
               availableReplicas:
-                description: Total number of available pods (ready for at least minReadySeconds) targeted by this deployment.
+                description: Total number of available pods (ready for at least minReadySeconds)
+                  targeted by this deployment.
                 format: int32
                 type: integer
               collisionCount:
-                description: Count of hash collisions for the Deployment. The Deployment controller uses this field as a collision avoidance mechanism when it needs to create the name for the newest ReplicaSet.
+                description: Count of hash collisions for the Deployment. The Deployment
+                  controller uses this field as a collision avoidance mechanism when
+                  it needs to create the name for the newest ReplicaSet.
                 format: int32
                 type: integer
               conditions:
-                description: Represents the latest available observations of a deployment's current state.
+                description: Represents the latest available observations of a deployment's
+                  current state.
                 items:
-                  description: DeploymentCondition describes the state of a deployment at a certain point.
+                  description: DeploymentCondition describes the state of a deployment
+                    at a certain point.
                   properties:
                     lastTransitionTime:
-                      description: Last time the condition transitioned from one status to another.
+                      description: Last time the condition transitioned from one status
+                        to another.
                       format: date-time
                       type: string
                     lastUpdateTime:
@@ -104,7 +127,8 @@ spec:
                       format: date-time
                       type: string
                     message:
-                      description: A human readable message indicating details about the transition.
+                      description: A human readable message indicating details about
+                        the transition.
                       type: string
                     reason:
                       description: The reason for the condition's last transition.
@@ -129,15 +153,21 @@ spec:
                 format: int32
                 type: integer
               replicas:
-                description: Total number of non-terminated pods targeted by this deployment (their labels match the selector).
+                description: Total number of non-terminated pods targeted by this
+                  deployment (their labels match the selector).
                 format: int32
                 type: integer
               unavailableReplicas:
-                description: Total number of unavailable pods targeted by this deployment. This is the total number of pods that are still required for the deployment to have 100% available capacity. They may either be pods that are running but not yet available or pods that still have not been created.
+                description: Total number of unavailable pods targeted by this deployment.
+                  This is the total number of pods that are still required for the
+                  deployment to have 100% available capacity. They may either be pods
+                  that are running but not yet available or pods that still have not
+                  been created.
                 format: int32
                 type: integer
               updatedReplicas:
-                description: Total number of non-terminated pods targeted by this deployment that have the desired template spec.
+                description: Total number of non-terminated pods targeted by this
+                  deployment that have the desired template spec.
                 format: int32
                 type: integer
             type: object

@@ -85,7 +85,7 @@ JupyterGatewayList contains a list of JupyterGateway
 | *`TypeMeta`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#typemeta-v1-meta[$$TypeMeta$$]__ | 
 | *`metadata`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#listmeta-v1-meta[$$ListMeta$$]__ | Refer to Kubernetes API documentation for fields of `metadata`.
 
-| *`items`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupytergateway[$$JupyterGateway$$]__ | 
+| *`items`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupytergateway[$$JupyterGateway$$] array__ | 
 |===
 
 
@@ -108,7 +108,7 @@ JupyterGatewaySpec defines the desired state of JupyterGateway
 | *`cullInterval`* __integer__ | The interval (in seconds) on which to check for idle kernels exceeding the cull timeout value.
 | *`logLevel`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-loglevel[$$LogLevel$$]__ | 
 | *`resources`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#resourcerequirements-v1-core[$$ResourceRequirements$$]__ | Compute Resources required by this container. Cannot be updated. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
-| *`image`* __string__ | Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images This field defaults to ccr.ccs.tencentyun.com/kubeflow-oteam/enterprise-gateway:2.5.0
+| *`image`* __string__ | Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images This field defaults to ghcr.io/skai-x/enterprise-gateway:2.6.0
 | *`clusterRole`* __string__ | ClusterRole for the gateway, which is used to create the kernel pods in the cluster. Defaults to enterprise-gateway-controller (created at startup).
 |===
 
@@ -219,7 +219,7 @@ JupyterKernelList contains a list of JupyterKernel
 | *`TypeMeta`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#typemeta-v1-meta[$$TypeMeta$$]__ | 
 | *`metadata`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#listmeta-v1-meta[$$ListMeta$$]__ | Refer to Kubernetes API documentation for fields of `metadata`.
 
-| *`items`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernel[$$JupyterKernel$$]__ | 
+| *`items`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernel[$$JupyterKernel$$] array__ | 
 |===
 
 
@@ -261,7 +261,7 @@ JupyterKernelSpecList contains a list of JupyterKernelSpec
 | *`TypeMeta`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#typemeta-v1-meta[$$TypeMeta$$]__ | 
 | *`metadata`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#listmeta-v1-meta[$$ListMeta$$]__ | Refer to Kubernetes API documentation for fields of `metadata`.
 
-| *`items`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelspec[$$JupyterKernelSpec$$]__ | 
+| *`items`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkernelspec[$$JupyterKernelSpec$$] array__ | 
 |===
 
 
@@ -281,7 +281,7 @@ JupyterKernelSpecSpec defines the desired state of JupyterKernelSpec
 | *`language`* __string__ | 
 | *`displayName`* __string__ | 
 | *`image`* __string__ | 
-| *`env`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#envvar-v1-core[$$EnvVar$$]__ | 
+| *`env`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#envvar-v1-core[$$EnvVar$$] array__ | 
 | *`command`* __string array__ | 
 | *`className`* __string__ | 
 | *`template`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#objectreference-v1-core[$$ObjectReference$$]__ | 
@@ -348,7 +348,7 @@ JupyterKernelTemplateList contains a list of JupyterKernelTemplate
 | *`TypeMeta`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#typemeta-v1-meta[$$TypeMeta$$]__ | 
 | *`metadata`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#listmeta-v1-meta[$$ListMeta$$]__ | Refer to Kubernetes API documentation for fields of `metadata`.
 
-| *`items`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkerneltemplate[$$JupyterKernelTemplate$$]__ | 
+| *`items`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyterkerneltemplate[$$JupyterKernelTemplate$$] array__ | 
 |===
 
 
@@ -409,7 +409,7 @@ JupyterNotebookList contains a list of JupyterNotebook
 | *`TypeMeta`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#typemeta-v1-meta[$$TypeMeta$$]__ | 
 | *`metadata`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#listmeta-v1-meta[$$ListMeta$$]__ | Refer to Kubernetes API documentation for fields of `metadata`.
 
-| *`items`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyternotebook[$$JupyterNotebook$$]__ | 
+| *`items`* __xref:{anchor_prefix}-github-com-tkestack-elastic-jupyter-operator-api-v1alpha1-jupyternotebook[$$JupyterNotebook$$] array__ | 
 |===
 
 
