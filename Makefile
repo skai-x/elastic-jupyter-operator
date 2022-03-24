@@ -59,7 +59,7 @@ generate: controller-gen api-reference
 	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./api/..."
 
 api-reference: install-tools ## Generate API reference documentation
-	crd-ref-docs \
+	$(GOBIN)/crd-ref-docs \
 		--source-path ./api/v1alpha1 \
 		--config ./docs/api/autogen/config.yaml \
 		--templates-dir ./docs/api/autogen/templates \
