@@ -65,7 +65,9 @@ func (g generator) DesiredDeploymentWithoutOwner() (*appsv1.Deployment, error) {
 
 	podSpec := v1.PodSpec{}
 	podLabels := g.labels()
+	podAnnotations := g.annotations()
 	labels := g.labels()
+	annotations := g.annotations()
 	selector := &metav1.LabelSelector{
 		MatchLabels: labels,
 	}
@@ -75,6 +77,11 @@ func (g generator) DesiredDeploymentWithoutOwner() (*appsv1.Deployment, error) {
 		if g.nb.Spec.Template.Labels != nil {
 			for k, v := range g.nb.Spec.Template.Labels {
 				podLabels[k] = v
+			}
+		}
+		if g.nb.Spec.Template.Annotations != nil {
+			for k, v := range g.nb.Spec.Template.Annotations {
+				podAnnotations[k] = v
 			}
 		}
 		podSpec = completePodSpec(&g.nb.Spec.Template.Spec)
@@ -114,16 +121,18 @@ func (g generator) DesiredDeploymentWithoutOwner() (*appsv1.Deployment, error) {
 
 	d := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Namespace: g.nb.Namespace,
-			Name:      g.nb.Name,
-			Labels:    labels,
+			Namespace:   g.nb.Namespace,
+			Name:        g.nb.Name,
+			Labels:      labels,
+			Annotations: annotations,
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: &replicas,
 			Selector: selector,
 			Template: v1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels: podLabels,
+					Labels:      podLabels,
+					Annotations: podAnnotations,
 				},
 				Spec: podSpec,
 			},
@@ -180,6 +189,10 @@ func (g generator) labels() map[string]string {
 		LabelNS:       g.nb.Namespace,
 		LabelNotebook: g.nb.Name,
 	}
+}
+
+func (g generator) annotations() map[string]string {
+	return map[string]string{}
 }
 
 func completePodSpec(old *v1.PodSpec) v1.PodSpec {
