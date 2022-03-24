@@ -46,7 +46,11 @@ var (
 		Spec: v1alpha1.JupyterNotebookSpec{
 			Template: &v1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels: map[string]string{"app": "notebook"},
+					Labels: map[string]string{
+						"app":          "notebook",
+						"custom-label": "yes",
+					},
+					Annotations: map[string]string{"custom-annotation": "yes"},
 				},
 				Spec: podSpec,
 			},
@@ -132,10 +136,12 @@ func TestGenerate(t *testing.T) {
 
 func TestDesiredDeploymentWithoutOwner(t *testing.T) {
 	type test struct {
-		gen           *generator
-		expectedErr   error
-		expectedImage string
-		expectedArgs  []string
+		gen                 *generator
+		expectedErr         error
+		expectedImage       string
+		expectedLabels      map[string]string
+		expectedAnnotations map[string]string
+		expectedArgs        []string
 	}
 
 	tests := []test{
@@ -143,7 +149,14 @@ func TestDesiredDeploymentWithoutOwner(t *testing.T) {
 			gen:           &generator{nb: notebookWithTemplate},
 			expectedErr:   nil,
 			expectedImage: DefaultImage,
-			expectedArgs:  nil,
+			expectedLabels: map[string]string{
+				"app":          "notebook",
+				"custom-label": "yes",
+			},
+			expectedAnnotations: map[string]string{
+				"custom-annotation": "yes",
+			},
+			expectedArgs: nil,
 		},
 		{
 			gen:           &generator{nb: notebookWithGateway},
@@ -184,6 +197,16 @@ func TestDesiredDeploymentWithoutOwner(t *testing.T) {
 		}
 		if err == nil && !reflect.DeepEqual(tc.expectedArgs, d.Spec.Template.Spec.Containers[0].Args) {
 			t.Errorf("i= %d expected: %v, got: %v", i, tc.expectedArgs, d.Spec.Template.Spec.Containers[0].Args)
+		}
+		for k, v := range tc.expectedLabels {
+			if v != d.Spec.Template.Labels[k] {
+				t.Errorf("expected: %v, got: %v", v, d.Labels[k])
+			}
+		}
+		for k, v := range tc.expectedAnnotations {
+			if v != d.Spec.Template.Annotations[k] {
+				t.Errorf("expected: %v, got: %v", v, d.Annotations[k])
+			}
 		}
 	}
 }
